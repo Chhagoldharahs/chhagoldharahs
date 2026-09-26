@@ -1,0 +1,18 @@
+# Cloudflare Pages netlify.toml-এর [[headers]] রুলের বদলে এই ফরম্যাট ব্যবহার করে
+# (Netlify-ও একই ফরম্যাট সাপোর্ট করে, তাই এই সিনট্যাক্স নতুন কিছু না)।
+
+# ছবি ও ফন্ট-জাতীয় স্ট্যাটিক অ্যাসেট দীর্ঘ সময় ব্রাউজার/CDN-এ ক্যাশ থাকবে —
+# ফিরতি ভিজিটরদের জন্য পেজ প্রায় সাথে সাথে লোড হবে (ছবি আবার ডাউনলোড করতে হবে না)।
+# দ্রষ্টব্য: কোনো ছবি নতুন করে আপলোড/পরিবর্তন করলে ফাইলের নামও পরিবর্তন করুন
+# (যেমন CHS.jpg এর বদলে CHS-2027.jpg), নইলে ক্যাশের কারণে পুরনো ছবিই দেখাতে পারে।
+/*.jpg
+  Cache-Control: public, max-age=2592000, must-revalidate
+
+/*.webp
+  Cache-Control: public, max-age=2592000, must-revalidate
+
+/sw.js
+  Cache-Control: no-cache
+
+/api/*
+  Cache-Control: no-store

@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="bn" class="notranslate" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>আইডি কার্ড জেনারেটর | ছাগলধরা উচ্চ বিদ্যালয়</title>
+<link rel="icon" href="logo-crisp.png">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin:0; font-family:'Segoe UI', 'Noto Sans Bengali', sans-serif;
+    background:#eef3ee; color:#003527; padding-bottom:60px;
+  }
+  /* ===== Neomorphism (Soft UI) লেয়ার — রঙ অপরিবর্তিত, শুধু সফট শ্যাডো যোগ করা
+     হয়েছে। আসল আইডি কার্ড (.card, .card-front, .card-back...) স্পর্শ করা হয়নি,
+     শুধু চারপাশের UI (প্যানেল/বাটন/ইনপুট) নিও-মরফিক করা হয়েছে। ===== */
+  :root{
+    --neu-distance: 10px; --neu-blur: 22px;
+    --neu-light: rgba(255,255,255,0.95); --neu-dark: rgba(0,53,39,0.28);
+  }
+  header, .panel, .type-toggle button, #printBtn{
+    border: none !important;
+    box-shadow:
+      var(--neu-distance) var(--neu-distance) var(--neu-blur) var(--neu-dark),
+      calc(var(--neu-distance) * -1) calc(var(--neu-distance) * -1) var(--neu-blur) var(--neu-light),
+      4px 4px 8px rgba(0,53,39,0.18),
+      -4px -4px 8px rgba(255,255,255,0.8)
+      !important;
+  }
+  .type-toggle button.active, #printBtn:active, .type-toggle button:active{
+    box-shadow:
+      inset var(--neu-distance) var(--neu-distance) var(--neu-blur) var(--neu-dark),
+      inset calc(var(--neu-distance) * -1) calc(var(--neu-distance) * -1) var(--neu-blur) var(--neu-light)
+      !important;
+  }
+  input[type=text], input[type=number], select{
+    border: none !important;
+    box-shadow:
+      inset 6px 6px 12px var(--neu-dark),
+      inset -6px -6px 12px var(--neu-light)
+      !important;
+  }
+  header {
+    background:linear-gradient(135deg,#003527,#00432F); color:#fff; padding:18px 20px; text-align:center;
+  }
+  header img { width:42px; height:42px; border-radius:50%; vertical-align:middle; margin-right:10px; border:2px solid #f4c542; }
+  header h1 { display:inline-block; vertical-align:middle; font-size:18px; margin:0; }
+  header p { margin:4px 0 0; font-size:12px; opacity:0.85; }
+
+  .wrap { max-width:1040px; margin:0 auto; padding:20px 16px; display:grid; gap:24px; }
+  @media (min-width:800px){ .wrap{ grid-template-columns: 1fr 1.1fr; align-items:start; } }
+
+  .panel {
+    background:#fff; border-radius:16px; padding:18px; box-shadow:0 6px 20px rgba(0,0,0,0.08);
+  }
+  .panel h2 { font-size:16px; margin:0 0 14px; color:#003527; }
+
+  .type-toggle { display:flex; gap:8px; margin-bottom:16px; }
+  .type-toggle button {
+    flex:1; padding:9px 3px; border-radius:9px; border:1.5px solid #003527; background:#fff;
+    color:#003527; font-weight:600; font-size:12.5px; cursor:pointer; transition:.15s;
+  }
+  .type-toggle button.active { background:#003527; color:#fff; }
+
+  label { display:block; font-size:13px; font-weight:600; margin:12px 0 5px; }
+  input[type=text], input[type=number], select {
+    width:100%; padding:9px 10px; border:1px solid #ccc; border-radius:8px; font-size:14px;
+    font-family:inherit;
+  }
+  input[type=text]:focus, select:focus { outline:none; border-color:#003527; }
+  input[type=file] { width:100%; font-size:13px; }
+
+  .row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+  #printBtn {
+    margin-top:18px; width:100%; padding:13px; background:#f4c542; color:#003527;
+    border:none; border-radius:9px; font-weight:700; font-size:15px; cursor:pointer;
+    box-shadow:0 4px 10px rgba(244,197,66,0.4);
+  }
+  .hint { font-size:12px; color:#666; margin-top:8px; }
+
+  /* ===== Card Preview ===== */
+  .preview-panel { display:flex; flex-direction:column; align-items:center; }
+  .cards { display:flex; flex-direction:column; align-items:center; gap:20px; }
+
+  .card {
+    width:340px; height:224px; border-radius:14px; overflow:hidden; position:relative;
+    box-shadow:0 12px 28px rgba(0,40,20,0.28); background:#fff;
+    font-family:'Segoe UI','Noto Sans Bengali',sans-serif;
+    border:1px solid #d9cfa0;
+  }
+  .card-front { display:flex; flex-direction:column; }
+  .card-front::before {
+    content:""; position:absolute; inset:0; pointer-events:none; z-index:0;
+    background:
+      url('logo-watermark-card.png') center 55% / auto 59.4% no-repeat,
+      radial-gradient(circle at 100% 100%, rgba(244,197,66,0.12), transparent 55%),
+      radial-gradient(circle at 0% 0%, rgba(0,53,39,0.05), transparent 45%);
+  }
+  .card-head {
+    background:linear-gradient(120deg,#003527,#00523A); color:#fff; padding:8px 10px;
+    display:flex; align-items:center; gap:7px; position:relative; z-index:1;
+    border-bottom:2.5px solid #f4c542; flex-shrink:0;
+  }
+  .card-head img.logo { width:30px; height:30px; border-radius:50%; background:#fff; flex-shrink:0; border:1px solid #f4c542; object-fit:cover; }
+  .card-head .school-name { font-size:12px; font-weight:800; line-height:1.18; letter-spacing:.2px; }
+  .card-head .school-sub { font-size:8px; opacity:0.88; line-height:1.3; margin-top:1px; white-space:nowrap; }
+
+  .card-body { display:flex; flex:1; padding:9px 10px 6px; gap:9px; position:relative; z-index:1; min-height:0; }
+  .card-photo {
+    width:74px; height:88px; border-radius:7px; background:#e8e8e8; overflow:hidden;
+    border:2px solid #f4c542; flex-shrink:0; box-shadow:0 2px 6px rgba(0,0,0,0.15);
+  }
+  .card-photo img { width:100%; height:100%; object-fit:cover; }
+  .card-info { flex:1; min-width:0; padding-right:56px; }
+
+  .card-qr {
+    position:absolute; top:8px; right:9px; width:50px; height:50px; background:#fff;
+    padding:2.5px; border-radius:5px; border:1.3px solid #003527; box-shadow:0 2px 5px rgba(0,0,0,0.15);
+    z-index:2;
+  }
+  .card-qr img { width:100%; height:100%; display:block; }
+  .card-info .name {
+    font-size:14px; font-weight:800; color:#003527; line-height:1.2;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .card-info .role-pill {
+    display:inline-block; background:linear-gradient(120deg,#f4c542,#e8b52e); color:#003527;
+    font-size:8.8px; font-weight:800; padding:2px 9px; border-radius:9px; margin:3px 0 5px; letter-spacing:.4px;
+  }
+  .card-info .field { font-size:10px; margin:2.5px 0; color:#2a2a2a; line-height:1.35; }
+  .card-info .field b { color:#003527; font-weight:700; }
+  .card-info .field .sep { color:#c9a800; margin:0 4px; font-weight:700; }
+
+  .card-foot {
+    background:#003527; color:#f4c542; font-size:8px; padding:4px 10px;
+    display:flex; justify-content:space-between; font-weight:700; letter-spacing:.3px;
+    position:relative; z-index:1; flex-shrink:0;
+  }
+
+  .card-back { padding:16px 18px; display:flex; flex-direction:column; 
+    background-image:url('logo-watermark-card.png'); background-repeat:no-repeat;
+    background-position:center 50%; background-size:auto 55.8%; }
+  .card-back-head {
+    display:flex; align-items:center; gap:8px; margin-bottom:10px;
+  }
+  .card-back-head img { width:22px; height:22px; border-radius:50%; }
+  .card-back-head span { font-size:10.5px; font-weight:700; color:#003527; }
+  .card-back .notice {
+    font-size:9.3px; color:#333; line-height:1.55; border:1px dashed #b8ab6e; border-radius:9px;
+    padding:9px 10px; margin-bottom:10px; background:rgba(251,248,238,0.72);
+  }
+  .card-back .sign-row { display:flex; justify-content:space-between; margin-top:auto; }
+  .card-back .sign { text-align:center; font-size:9px; width:45%; }
+  .card-back .sign .line { border-top:1px solid #333; margin-bottom:3px; padding-top:24px; }
+  .card-back .addr {
+    font-size:8.8px; text-align:center; color:#fff; margin-top:10px; font-weight:600;
+    background:#003527; padding:5px 8px; border-radius:8px;
+  }
+
+  .card-label { font-size:11px; font-weight:700; color:#666; text-transform:uppercase; letter-spacing:1px; margin-bottom:2px; }
+
+  /* ===== শিক্ষক/শিক্ষিকা কার্ড: আলাদা থিম (নেভি-ব্লু + গোল্ড) ===== */
+  .card.is-teacher { border-color:#c3cbe0; }
+  .card.is-teacher .card-head {
+    background:linear-gradient(120deg,#111f3d,#243b6b); border-bottom-color:#e0b23a;
+  }
+  .card.is-teacher .card-front::before {
+    background:
+      url('logo-watermark-card.png') center 55% / auto 59.4% no-repeat,
+      radial-gradient(circle at 100% 100%, rgba(224,178,58,0.14), transparent 55%),
+      radial-gradient(circle at 0% 0%, rgba(17,31,61,0.06), transparent 45%);
+  }
+  .card.is-teacher .card-photo {
+    width:78px; height:78px; border-radius:50%; border-color:#e0b23a; align-self:center;
+  }
+  .card.is-teacher .name { color:#111f3d; }
+  .card.is-teacher .role-pill {
+    background:linear-gradient(120deg,#243b6b,#111f3d); color:#f4d478;
+  }
+  .card.is-teacher .field b { color:#111f3d; }
+  .card.is-teacher .field .sep { color:#b6902c; }
+  .card.is-teacher .card-qr { border-color:#111f3d; }
+  .card.is-teacher .card-foot { background:#111f3d; color:#e0b23a; }
+  .card-back.is-teacher .card-back-head span { color:#111f3d; }
+  .card-back.is-teacher .notice { border-color:#b9c3dd; background:rgba(242,244,250,0.72); }
+  .card-back.is-teacher .addr { background:#111f3d; }
+  .card-back.is-teacher .sign { color:#111f3d; }
+
+  /* ===== কর্মচারী কার্ড: আলাদা থিম (লাল + গোল্ড) ===== */
+  .card.is-staff { border-color:#e3b3b3; }
+  .card.is-staff .card-head {
+    background:linear-gradient(120deg,#7a0f0f,#a81c1c); border-bottom-color:#f4c542;
+  }
+  .card.is-staff .card-front::before {
+    background:
+      url('logo-watermark-card.png') center 55% / auto 59.4% no-repeat,
+      radial-gradient(circle at 100% 100%, rgba(244,197,66,0.14), transparent 55%),
+      radial-gradient(circle at 0% 0%, rgba(122,15,15,0.06), transparent 45%);
+  }
+  .card.is-staff .card-photo {
+    width:78px; height:78px; border-radius:50%; border-color:#f4c542; align-self:center;
+  }
+  .card.is-staff .name { color:#7a0f0f; }
+  .card.is-staff .role-pill {
+    background:linear-gradient(120deg,#a81c1c,#7a0f0f); color:#ffe9b0;
+  }
+  .card.is-staff .field b { color:#7a0f0f; }
+  .card.is-staff .field .sep { color:#b6902c; }
+  .card.is-staff .card-qr { border-color:#7a0f0f; }
+  .card.is-staff .card-foot { background:#7a0f0f; color:#f4c542; }
+  .card-back.is-staff .card-back-head span { color:#7a0f0f; }
+  .card-back.is-staff .notice { border-color:#e3b3b3; background:rgba(251,240,240,0.72); }
+  .card-back.is-staff .addr { background:#7a0f0f; }
+  .card-back.is-staff .sign { color:#7a0f0f; }
+
+  /* ===== লগইন মোডাল ===== */
+  .login-modal-backdrop {
+    position:fixed; inset:0; background:rgba(0,53,39,0.6); display:flex;
+    align-items:center; justify-content:center; z-index:1000; padding:16px;
+  }
+  .login-modal {
+    background:#fff; border-radius:14px; padding:24px 20px; max-width:320px; width:100%;
+    box-shadow:0 12px 30px rgba(0,0,0,0.3); text-align:center;
+  }
+  .login-modal h3 { margin:0 0 6px; font-size:16px; color:#003527; }
+  .login-modal p { font-size:12.5px; color:#555; margin:0 0 14px; }
+  .login-modal input {
+    width:100%; padding:11px 10px; border:1.5px solid #ccc; border-radius:8px; font-size:15px;
+    text-align:center; letter-spacing:1px; font-family:inherit;
+  }
+  .login-modal input:focus { outline:none; border-color:#003527; }
+  .login-modal .error-msg { color:#c0392b; font-size:12px; margin:8px 0 0; display:none; }
+  .login-modal .btn-row { display:flex; gap:8px; margin-top:16px; }
+  .login-modal button.submit {
+    flex:1; background:#003527; color:#fff; border:none; padding:11px; border-radius:8px;
+    font-weight:700; font-size:13.5px; cursor:pointer; font-family:inherit;
+  }
+  .login-modal button.cancel {
+    flex:1; background:#eee; color:#333; border:none; padding:11px; border-radius:8px;
+    font-weight:600; font-size:13.5px; cursor:pointer; font-family:inherit;
+  }
+
+  /* সব এলিমেন্টে ব্যাকগ্রাউন্ড কালার/গ্রেডিয়েন্ট প্রিন্টে বজায় রাখার জন্য */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  @media print {
+    @page { margin:0; }
+    /* আগে "visibility:hidden" ব্যবহারের ফলে লুকানো অংশও জায়গা নিত এবং প্রিন্টে
+       বাড়তি সাদা পেজ তৈরি হতো — এখন display:none দিয়ে পুরো সরিয়ে দেওয়া হয়। */
+    html, body { height:auto !important; min-height:0 !important; }
+    body > *:not(.wrap) { display:none !important; }
+    .wrap > *:not(.preview-panel) { display:none !important; }
+    .wrap { display:block !important; max-width:none !important; margin:0 !important; padding:0 !important; }
+    body { background:#fff; padding:0 !important; margin:0; }
+    .card { break-inside:avoid; page-break-inside:avoid; }
+    .preview-panel {
+      position:static; width:100%;
+      box-shadow:none; border-radius:0; padding:8mm;
+      background:#fff;
+    }
+    .preview-panel h2, .card-label { display:none; }
+    .cards { gap:8mm; }
+    .card { box-shadow:none; border:1px solid #999; }
+
+    /* নিচের এলিমেন্টগুলোর রং/গ্রেডিয়েন্ট জোর করে প্রিন্টে দেখানোর জন্য */
+    .card-head,
+    .card-foot,
+    .role-pill,
+    .card-back .addr,
+    .card-photo,
+    .card-back,
+    .card-front::before {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color-adjust: exact !important;
+    }
+  }
+
+  /* ===== মেটেরিয়াল-স্টাইল রিপল ইফেক্ট (বাটনে ক্লিক করলে) ===== */
+  .chs-ripple{
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.85);
+    mix-blend-mode: overlay;
+    transform: scale(0);
+    pointer-events: none;
+    animation: chsRippleAnim 600ms ease-out forwards;
+    z-index: 1;
+  }
+  @keyframes chsRippleAnim{
+    to{ transform: scale(2.8); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <picture><source srcset="logo-crisp.webp" type="image/webp"><img src="logo-crisp.png" alt="School Logo" decoding="async"></picture>
+  <h1>ছাগলধরা উচ্চ বিদ্যালয় — আইডি কার্ড জেনারেটর</h1>
+  <p>শিক্ষার্থী ও শিক্ষকদের পরিচয়পত্র তৈরি ও প্রিন্ট করুন</p>
+</header>
+
+<div id="loginModalBackdrop" class="login-modal-backdrop" style="display:none;">
+  <div class="login-modal">
+    <h3 id="loginModalTitle">লগইন প্রয়োজন</h3>
+    <p id="loginModalSub">এই ক্যাটাগরিতে প্রবেশ করতে আপনার লগইন আইডি দিন</p>
+    <input type="text" id="loginInput" placeholder="লগইন আইডি" autocomplete="off">
+    <p class="error-msg" id="loginError">ভুল লগইন আইডি! আবার চেষ্টা করুন।</p>
+    <div class="btn-row">
+      <button type="button" class="cancel" id="loginCancelBtn">বাতিল</button>
+      <button type="button" class="submit" id="loginSubmitBtn">প্রবেশ করুন</button>
+    </div>
+  </div>
+</div>
+
+<div id="verifyResultWrap" style="display:none; max-width:480px; margin:24px auto; padding:0 16px;">
+  <div class="panel" style="text-align:center;">
+    <div id="verifyBadge" style="font-size:15px; font-weight:700; padding:10px 14px; border-radius:10px; margin-bottom:14px;"></div>
+    <div id="verifyDetails" style="text-align:left; font-size:14px; line-height:1.9;"></div>
+    <p class="hint" style="margin-top:16px;">এই তথ্য স্কুলের সার্ভারে সংরক্ষিত মূল রেকর্ড থেকে সরাসরি দেখানো হয়েছে, QR কোডের ভিতরে থাকা কোনো তথ্য থেকে নয় — তাই এটি বিশ্বাসযোগ্য।</p>
+  </div>
+</div>
+
+<div class="wrap" id="mainWrap">
+  <!-- ===== Form Panel ===== -->
+  <div class="panel">
+    <h2>তথ্য দিন</h2>
+    <div class="type-toggle">
+      <button type="button" id="btnStudent" class="active">শিক্ষার্থী</button>
+      <button type="button" id="btnTeacher">শিক্ষক/শিক্ষিকা</button>
+      <button type="button" id="btnStaff">কর্মচারী</button>
+    </div>
+
+    <div id="activeCategoryBar" style="display:none; justify-content:space-between; align-items:center; background:#eef3ee; padding:8px 12px; border-radius:9px; margin-bottom:14px;">
+      <span style="font-size:12.5px;">প্রবেশ করা আছেঃ <b id="activeCategoryLabel">শিক্ষার্থী</b></span>
+      <button type="button" id="logoutBtn" style="background:#fff; border:1px solid #003527; color:#003527; padding:5px 11px; border-radius:7px; font-size:11.5px; font-weight:700; cursor:pointer;">লগ-আউট</button>
+    </div>
+
+    <p class="hint" id="lockedMsg" style="text-align:center; padding:24px 6px;">🔒 আইডি কার্ড তৈরি করতে উপরে থেকে আপনার ক্যাটাগরি নির্বাচন করে লগইন আইডি দিন।</p>
+
+    <div id="formFields" style="display:none;">
+    <label>ছবি আপলোড করুন</label>
+    <input type="file" id="photoInput" accept="image/*">
+    <p class="hint" style="margin-top:6px;">QR কোড স্ক্যান করে এই পেজ খুললে বাকি তথ্য অটো-ফিল হবে, শুধু ছবিটি আবার আপলোড করে দিন।</p>
+
+    <label>পূর্ণ নাম</label>
+    <input type="text" id="fName" placeholder="যেমনঃ মোঃ রহিম উদ্দিন">
+
+    <div class="row2">
+      <div>
+        <label id="labelClassOrDesig">শ্রেণি</label>
+        <select id="fClassSelect">
+          <option value="6">৬ষ্ঠ</option>
+          <option value="7">৭ম</option>
+          <option value="8">৮ম</option>
+          <option value="9">৯ম</option>
+          <option value="10">১০ম</option>
+        </select>
+        <input type="text" id="fClass" placeholder="যেমনঃ সহকারী শিক্ষক" style="display:none;">
+      </div>
+      <div id="sectionWrap">
+        <label id="labelSectionOrCode">শাখা</label>
+        <input type="text" id="fSection" placeholder="যেমনঃ ক">
+        <input type="text" id="fDesigCode" placeholder="যেমনঃ AT" maxlength="4" style="display:none; text-transform:uppercase;">
+      </div>
+    </div>
+
+    <div class="row2">
+      <div id="rollWrap">
+        <label id="labelRollOrSerial">রোল নম্বর</label>
+        <input type="text" id="fRoll" placeholder="যেমনঃ ০৫">
+        <input type="text" id="fSerial" placeholder="যেমনঃ ০১" style="display:none;">
+      </div>
+      <div>
+        <label id="labelIdNo">আইডি নম্বর (স্বয়ংক্রিয়)</label>
+        <input type="text" id="fId" placeholder="যেমনঃ CHS-2026-045" readonly style="background:#f2f2f2;">
+      </div>
+    </div>
+    <p class="hint" id="codeHint" style="display:none;">শর্ট কোড উদাহরণঃ প্রধান শিক্ষক = HM, সহকারী শিক্ষক = AT, নিরাপত্তা প্রহরী = SG, আয়া = AY — প্রতিটি পদবীর জন্য একটি নির্দিষ্ট কোড ঠিক করে সবসময় সেটাই ব্যবহার করুন।</p>
+
+    <div class="row2">
+      <div>
+        <label>শিক্ষাবর্ষ / সেশন</label>
+        <input type="text" id="fSession" placeholder="যেমনঃ ২০২৬" value="২০২৬">
+      </div>
+      <div>
+        <label>রক্তের গ্রুপ</label>
+        <select id="fBlood">
+          <option value="">নির্বাচন করুন</option>
+          <option>A+</option><option>A-</option>
+          <option>B+</option><option>B-</option>
+          <option>AB+</option><option>AB-</option>
+          <option>O+</option><option>O-</option>
+        </select>
+      </div>
+    </div>
+
+    <label>অভিভাবক / জরুরি যোগাযোগ নম্বর</label>
+    <input type="text" id="fPhone" placeholder="০১৭XXXXXXXX">
+
+    <button id="printBtn" type="button">🖨️ কার্ড প্রিন্ট করুন</button>
+    <p class="hint">প্রিন্ট করার সময় "More settings → Paper size: A4, Margins: None" রাখলে ভালো ফলাফল পাবে। প্রিন্ট করা কার্ড কেটে লেমিনেট করে নিতে পারেন।</p>
+    </div>
+  </div>
+
+  <!-- ===== Card Preview ===== -->
+  <div class="panel preview-panel" id="previewPanelEl">
+    <h2>প্রিভিউ</h2>
+    <p class="hint" id="previewLockedMsg" style="text-align:center; padding:20px 6px;">লগইন করার পর এখানে কার্ডের প্রিভিউ দেখা যাবে।</p>
+    <div class="cards" id="cardsWrap" style="display:none;">
+      <div>
+        <div class="card-label">সামনের পাশ</div>
+        <div class="card card-front" id="cardFrontEl">
+          <div class="card-head">
+            <picture><source srcset="logo-crisp.webp" type="image/webp"><img class="logo" src="logo-crisp.png" alt="logo" decoding="async"></picture>
+            <div>
+              <div class="school-name">ছাগলধরা উচ্চ বিদ্যালয়</div>
+              <div class="school-sub">Chhagoldhara High School, Sariakandi, Bogura</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-photo"><img id="previewPhoto" src="logo-crisp.png" alt="photo"></div>
+            <div class="card-info">
+              <div class="name" id="pName">নাম লিখুন</div>
+              <div class="role-pill" id="pRolePill">শিক্ষার্থী</div>
+              <div class="field" id="pClassRow"><b id="pClassLabel">শ্রেণি:</b> —</div>
+              <div class="field"><b>আইডি নং:</b> <span id="pId">—</span></div>
+              <div class="field" id="pMetaRow"><b id="pSessionLabel">সেশন:</b> <span id="pSession">২০২৬</span><span class="sep">|</span><b>গ্রুপ:</b> <span id="pBlood">—</span></div>
+            </div>
+            <div class="card-qr"><img id="previewQR" src="" alt="QR"></div>
+          </div>
+          <div class="card-foot">
+            <span>EIIN: 119691</span>
+            <span>বোর্ড: রাজশাহী</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card-label">পেছনের পাশ</div>
+        <div class="card card-back" id="cardBackEl">
+          <div class="card-back-head">
+            <picture><source srcset="logo-crisp.webp" type="image/webp"><img src="logo-crisp.png" alt="logo" decoding="async"></picture>
+            <span>ছাগলধরা উচ্চ বিদ্যালয়</span>
+          </div>
+          <div class="notice">
+            এই পরিচয়পত্রটি ছাগলধরা উচ্চ বিদ্যালয়ের সম্পত্তি। কার্ডটি হারিয়ে/কুড়িয়ে পাওয়া গেলে
+            অনুগ্রহ করে নিচের ঠিকানায় যোগাযোগ করুন। জরুরি যোগাযোগ: <span id="pPhone">—</span>
+          </div>
+          <div class="sign-row">
+            <div class="sign"><div class="line">শিক্ষার্থী/শিক্ষকের স্বাক্ষর</div></div>
+            <div class="sign"><div class="line">প্রধান শিক্ষকের স্বাক্ষর</div></div>
+          </div>
+          <div class="addr">ছাগলধরা, সারিয়াকান্দি, বগুড়া · ০৪৭XXXXXXXX · chhagoldharaschool.edu.bd</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== মেটেরিয়াল-স্টাইল রিপল ইফেক্ট: যেকোনো <button>-এ ক্লিক করলে ক্লিক-পয়েন্ট
+// থেকে হালকা বৃত্তাকার রিপল ছড়িয়ে পড়ে (motion কমাতে চাইলে সিস্টেম সেটিং মেনে বন্ধ) =====
+if (!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn || btn.disabled) return;
+    const rect = btn.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    const size = Math.max(rect.width, rect.height);
+    const ripple = document.createElement('span');
+    ripple.className = 'chs-ripple';
+    ripple.style.width = ripple.style.height = size + 'px';
+    ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+    ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+    const cs = getComputedStyle(btn);
+    if (cs.position === 'static') btn.style.position = 'relative';
+    if (cs.overflow !== 'hidden') btn.style.overflow = 'hidden';
+    btn.appendChild(ripple);
+    ripple.addEventListener('animationend', () => ripple.remove());
+  }, { passive: true });
+}
+
+let cardType = 'student';
+
+const el = id => document.getElementById(id);
+const btnStudent = el('btnStudent');
+const btnTeacher = el('btnTeacher');
+const btnStaff = el('btnStaff');
+const labelClassOrDesig = el('labelClassOrDesig');
+const labelIdNo = el('labelIdNo');
+const labelSectionOrCode = el('labelSectionOrCode');
+const labelRollOrSerial = el('labelRollOrSerial');
+const pClassLabel = el('pClassLabel');
+const pRolePill = el('pRolePill');
+
+const classLabels = {6:'৬ষ্ঠ',7:'৭ম',8:'৮ম',9:'৯ম',10:'১০ম'};
+function bnToEn(str){
+  const map = {'০':'0','১':'1','২':'2','৩':'3','৪':'4','৫':'5','৬':'6','৭':'7','৮':'8','৯':'9'};
+  return String(str).replace(/[০-৯]/g, d => map[d]);
+}
+function digitsOnly(str){ return bnToEn(str).replace(/[^0-9]/g, ''); }
+
+function setType(type){
+  cardType = type;
+  const cardFrontEl = el('cardFrontEl');
+  const cardBackEl = el('cardBackEl');
+  const pSessionLabel = el('pSessionLabel');
+
+  btnStudent.classList.toggle('active', type === 'student');
+  btnTeacher.classList.toggle('active', type === 'teacher');
+  btnStaff.classList.toggle('active', type === 'staff');
+
+  cardFrontEl.classList.remove('is-teacher','is-staff');
+  cardBackEl.classList.remove('is-teacher','is-staff');
+
+  if(type === 'student'){
+    labelClassOrDesig.textContent = 'শ্রেণি';
+    labelIdNo.textContent = 'আইডি নম্বর (স্বয়ংক্রিয়)';
+    labelSectionOrCode.textContent = 'শাখা';
+    labelRollOrSerial.textContent = 'রোল নম্বর';
+    el('fSection').style.display = '';
+    el('fDesigCode').style.display = 'none';
+    el('fRoll').style.display = '';
+    el('fSerial').style.display = 'none';
+    el('codeHint').style.display = 'none';
+    pRolePill.textContent = 'শিক্ষার্থী';
+    pClassLabel.textContent = 'শ্রেণি:';
+    pSessionLabel.textContent = 'সেশন:';
+    el('fClassSelect').style.display = '';
+    el('fClass').style.display = 'none';
+  } else if(type === 'teacher'){
+    labelClassOrDesig.textContent = 'পদবী';
+    labelIdNo.textContent = 'আইডি নম্বর (স্বয়ংক্রিয়)';
+    labelSectionOrCode.textContent = 'শর্ট কোড';
+    labelRollOrSerial.textContent = 'ক্রমিক নম্বর';
+    el('fSection').style.display = 'none';
+    el('fDesigCode').style.display = '';
+    el('fRoll').style.display = 'none';
+    el('fSerial').style.display = '';
+    el('codeHint').style.display = '';
+    pRolePill.textContent = 'শিক্ষক';
+    pClassLabel.textContent = 'পদবী:';
+    pSessionLabel.textContent = 'যোগদান:';
+    el('fClassSelect').style.display = 'none';
+    el('fClass').style.display = '';
+    el('fClass').placeholder = 'যেমনঃ সহকারী শিক্ষক';
+    cardFrontEl.classList.add('is-teacher');
+    cardBackEl.classList.add('is-teacher');
+  } else {
+    labelClassOrDesig.textContent = 'পদবী';
+    labelIdNo.textContent = 'আইডি নম্বর (স্বয়ংক্রিয়)';
+    labelSectionOrCode.textContent = 'শর্ট কোড';
+    labelRollOrSerial.textContent = 'ক্রমিক নম্বর';
+    el('fSection').style.display = 'none';
+    el('fDesigCode').style.display = '';
+    el('fRoll').style.display = 'none';
+    el('fSerial').style.display = '';
+    el('codeHint').style.display = '';
+    pRolePill.textContent = 'কর্মচারী';
+    pClassLabel.textContent = 'পদবী:';
+    pSessionLabel.textContent = 'যোগদান:';
+    el('fClassSelect').style.display = 'none';
+    el('fClass').style.display = '';
+    el('fClass').placeholder = 'যেমনঃ নিরাপত্তা প্রহরী';
+    cardFrontEl.classList.add('is-staff');
+    cardBackEl.classList.add('is-staff');
+  }
+  updateAutoId();
+  updatePreview();
+}
+
+function updateAutoId(){
+  const yr = digitsOnly(el('fSession').value);
+  if(cardType === 'student'){
+    const cls = digitsOnly(el('fClassSelect').value);
+    const roll = digitsOnly(el('fRoll').value);
+    if(yr && cls && roll){
+      el('fId').value = 'CHS' + yr + cls + roll;
+    } else {
+      el('fId').value = '';
+    }
+  } else {
+    const code = el('fDesigCode').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+    const serial = digitsOnly(el('fSerial').value);
+    if(yr && code && serial){
+      el('fId').value = 'CHS' + yr + code + serial.padStart(2, '0');
+    } else {
+      el('fId').value = '';
+    }
+  }
+}
+
+/* ===== লগইন গেট: প্রতিটি ক্যাটাগরির জন্য নির্দিষ্ট লগইন আইডি ===== */
+const LOGIN_CODES = {
+  student: 'CHSST2483',
+  teacher: 'CHSTC4283',
+  staff: 'CHSSTF8243'
+};
+const categoryNames = { student:'শিক্ষার্থী', teacher:'শিক্ষক/শিক্ষিকা', staff:'কর্মচারী' };
+let unlockedType = null;
+let unlockedCode = null;
+let pendingLoginType = null;
+
+const loginModalBackdrop = el('loginModalBackdrop');
+const loginModalSub = el('loginModalSub');
+const loginInput = el('loginInput');
+const loginError = el('loginError');
+
+function openLogin(type){
+  if(type === unlockedType) return; // already logged in for this category
+  pendingLoginType = type;
+  loginModalSub.textContent = categoryNames[type] + ' ক্যাটাগরিতে প্রবেশ করতে লগইন আইডি দিন';
+  loginInput.value = '';
+  loginError.style.display = 'none';
+  loginModalBackdrop.style.display = 'flex';
+  setTimeout(() => loginInput.focus(), 50);
+}
+
+function closeLogin(){
+  loginModalBackdrop.style.display = 'none';
+  pendingLoginType = null;
+}
+
+function attemptLogin(){
+  if(!pendingLoginType) return;
+  const entered = loginInput.value.trim().toUpperCase();
+  if(entered === LOGIN_CODES[pendingLoginType]){
+    unlockedType = pendingLoginType;
+    unlockedCode = entered;
+    closeLogin();
+    unlockApp(unlockedType);
+  } else {
+    loginError.style.display = 'block';
+    loginInput.focus();
+    loginInput.select();
+  }
+}
+
+function unlockApp(type){
+  el('lockedMsg').style.display = 'none';
+  el('formFields').style.display = '';
+  el('previewLockedMsg').style.display = 'none';
+  el('cardsWrap').style.display = '';
+  el('activeCategoryBar').style.display = 'flex';
+  el('activeCategoryLabel').textContent = categoryNames[type];
+  setType(type);
+}
+
+function lockApp(){
+  unlockedType = null;
+  el('lockedMsg').style.display = '';
+  el('formFields').style.display = 'none';
+  el('previewLockedMsg').style.display = '';
+  el('cardsWrap').style.display = 'none';
+  el('activeCategoryBar').style.display = 'none';
+}
+
+el('loginSubmitBtn').addEventListener('click', attemptLogin);
+el('loginCancelBtn').addEventListener('click', closeLogin);
+loginInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') attemptLogin(); });
+el('logoutBtn').addEventListener('click', lockApp);
+
+btnStudent.addEventListener('click', () => openLogin('student'));
+btnTeacher.addEventListener('click', () => openLogin('teacher'));
+btnStaff.addEventListener('click', () => openLogin('staff'));
+
+function updatePreview(){
+  el('pName').textContent = el('fName').value.trim() || 'নাম লিখুন';
+
+  let classVal;
+  if(cardType === 'student'){
+    classVal = classLabels[el('fClassSelect').value] || '—';
+    if(el('fSection').value.trim()){
+      classVal += ' - ' + el('fSection').value.trim();
+    }
+    classVal += ' <span class="sep">|</span> <b>রোল:</b> ' + (el('fRoll').value.trim() || '—');
+  } else {
+    classVal = el('fClass').value.trim() || '—';
+  }
+  el('pClassRow').innerHTML = '<b>' + (cardType==='student' ? 'শ্রেণি:' : 'পদবী:') + '</b> ' + classVal;
+
+  el('pId').textContent = el('fId').value.trim() || '—';
+  el('pSession').textContent = el('fSession').value.trim() || '—';
+  el('pBlood').textContent = el('fBlood').value || '—';
+  el('pPhone').textContent = el('fPhone').value.trim() || '—';
+
+  updateQR();
+}
+
+/* ===== QR কোড: কার্ডের তথ্যসহ ভেরিফিকেশন/রিজেনারেশন লিংক ===== */
+const VERIFY_BASE_URL = 'https://chhagoldharaschool.edu.bd/idcard.html';
+
+function buildVerifyUrl(){
+  const params = new URLSearchParams();
+  params.set('t', cardType);
+  params.set('n', el('fName').value.trim());
+  if(cardType === 'student'){
+    params.set('c', el('fClassSelect').value);
+    params.set('s', el('fSection').value.trim());
+    params.set('r', el('fRoll').value.trim());
+  } else {
+    params.set('c', el('fClass').value.trim());
+    params.set('s', el('fDesigCode').value.trim());
+    params.set('r', el('fSerial').value.trim());
+  }
+  params.set('i', el('fId').value.trim());
+  params.set('y', el('fSession').value.trim());
+  params.set('b', el('fBlood').value);
+  params.set('p', el('fPhone').value.trim());
+  return VERIFY_BASE_URL + '?' + params.toString();
+}
+
+/* চূড়ান্ত প্রিন্ট/ডাউনলোডের সময় সার্ভারে কার্ডের তথ্য সংরক্ষণ করে
+   শুধু একটা ছোট আইডি ফেরত নেয় — QR-এ ঐ আইডিটাই বসে, ফলে স্ক্যান
+   করলে সার্ভারের আসল রেকর্ড থেকে যাচাই হয়, QR-এর ভেতরের ডেটা থেকে নয়।
+   সার্ভার/নেটওয়ার্ক না পেলে আগের মতো স্বনির্ভর QR-এই ফিরে যাবে। */
+async function issueVerifiedCard(){
+  const payload = {
+    type: cardType,
+    code: unlockedCode,
+    name: el('fName').value.trim(),
+    classLabel: cardType === 'student' ? el('fClassSelect').value : el('fClass').value.trim(),
+    section: cardType === 'student' ? el('fSection').value.trim() : el('fDesigCode').value.trim(),
+    roll: cardType === 'student' ? el('fRoll').value.trim() : el('fSerial').value.trim(),
+    session: el('fSession').value.trim(),
+    idNo: el('fId').value.trim(),
+    blood: el('fBlood').value,
+    phone: el('fPhone').value.trim(),
+  };
+  try {
+    const res = await fetch('/api/idcard-issue', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (data && data.ok && data.id) return data.id;
+    return null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function loadQrImage(src){
+  return new Promise((resolve) => {
+    const img = el('previewQR');
+    const done = () => { img.removeEventListener('load', done); img.removeEventListener('error', done); resolve(); };
+    img.addEventListener('load', done);
+    img.addEventListener('error', done);
+    img.src = src;
+    setTimeout(resolve, 2500); // নেটওয়ার্ক ধীর হলেও প্রিন্ট আটকে থাকবে না
+  });
+}
+
+let qrDebounce;
+function updateQR(){
+  clearTimeout(qrDebounce);
+  qrDebounce = setTimeout(() => {
+    const url = buildVerifyUrl();
+    const qrImgUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=0&data=' + encodeURIComponent(url);
+    el('previewQR').src = qrImgUrl;
+  }, 400);
+}
+
+/* পুরাতন কার্ডের QR স্ক্যান করে খোলা হলে URL থেকে তথ্য পড়ে ফর্ম পূরণ করা */
+function loadFromUrlParams(){
+  const params = new URLSearchParams(window.location.search);
+  if(![...params.keys()].length) return;
+
+  let type = 'student';
+  if(params.get('t') === 'teacher') type = 'teacher';
+  else if(params.get('t') === 'staff') type = 'staff';
+  setType(type);
+
+  if(params.has('n')) el('fName').value = params.get('n');
+  if(type === 'student'){
+    if(params.has('c')) el('fClassSelect').value = params.get('c');
+    if(params.has('s')) el('fSection').value = params.get('s');
+    if(params.has('r')) el('fRoll').value = params.get('r');
+  } else {
+    if(params.has('c')) el('fClass').value = params.get('c');
+    if(params.has('s')) el('fDesigCode').value = params.get('s');
+    if(params.has('r')) el('fSerial').value = params.get('r');
+  }
+  if(params.has('y')) el('fSession').value = params.get('y');
+  if(params.has('b')) el('fBlood').value = params.get('b');
+  if(params.has('p')) el('fPhone').value = params.get('p');
+
+  updateAutoId();
+  updatePreview();
+}
+
+['fName','fClass','fClassSelect','fSection','fRoll','fSession','fBlood','fPhone','fDesigCode','fSerial'].forEach(id => {
+  el(id).addEventListener('input', () => { updateAutoId(); updatePreview(); });
+  el(id).addEventListener('change', () => { updateAutoId(); updatePreview(); });
+});
+el('fDesigCode').addEventListener('input', function(){
+  const pos = this.selectionStart;
+  this.value = this.value.toUpperCase();
+  this.setSelectionRange(pos, pos);
+});
+el('fId').addEventListener('input', updatePreview);
+
+el('photoInput').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => { el('previewPhoto').src = ev.target.result; };
+  reader.readAsDataURL(file);
+});
+
+const ORIGINAL_TITLE = document.title;
+function sanitizeFileName(str){
+  return str.replace(/[\\/:*?"<>|]/g, '').trim();
+}
+el('printBtn').addEventListener('click', async () => {
+  const printBtn = el('printBtn');
+  printBtn.disabled = true;
+  const id = await issueVerifiedCard();
+  if (id) {
+    const finalUrl = VERIFY_BASE_URL + '?verify=' + encodeURIComponent(id);
+    await loadQrImage('https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=0&data=' + encodeURIComponent(finalUrl));
+  }
+  // id না পেলে প্রিভিউতে আগে থেকে থাকা স্বনির্ভর QR-টাই থেকে যাবে
+  printBtn.disabled = false;
+  const name = sanitizeFileName(el('fName').value.trim()) || categoryNames[cardType];
+  document.title = 'আইডি কার্ড ' + name + ' ছাগলধরা উচ্চ বিদ্যালয়';
+  window.print();
+  document.title = ORIGINAL_TITLE;
+});
+window.addEventListener('afterprint', () => { document.title = ORIGINAL_TITLE; });
+
+/* নতুন QR (?verify=<id>) স্ক্যান করে খোলা হলে — সার্ভারের আসল রেকর্ড
+   থেকে যাচাই করে দেখানো হয়, ফর্ম/জেনারেটর দেখানো হয় না */
+async function showVerifyResult(id){
+  el('mainWrap').style.display = 'none';
+  const wrap = el('verifyResultWrap');
+  const badge = el('verifyBadge');
+  const details = el('verifyDetails');
+  wrap.style.display = 'block';
+  badge.style.background = '#eef3ee';
+  badge.style.color = '#003527';
+  badge.textContent = 'যাচাই করা হচ্ছে...';
+  details.innerHTML = '';
+
+  let data;
+  try {
+    const res = await fetch('/api/idcard-verify?id=' + encodeURIComponent(id));
+    data = await res.json();
+  } catch (e) {
+    data = null;
+  }
+
+  if (!data || !data.found) {
+    badge.style.background = '#fdecea';
+    badge.style.color = '#c0392b';
+    badge.textContent = '❌ এই আইডি কার্ড যাচাই করা যায়নি — এটি সঠিক নাও হতে পারে';
+    return;
+  }
+
+  const c = data.card;
+  badge.style.background = '#e8f6ee';
+  badge.style.color = '#003527';
+  badge.textContent = '✅ যাচাইকৃত — এটি স্কুলের সরবরাহকৃত একটি বৈধ আইডি কার্ড';
+
+  const rows = [];
+  rows.push(['ধরন', categoryNames[c.type] || c.type]);
+  rows.push(['নাম', c.name]);
+  if (c.type === 'student') {
+    rows.push(['শ্রেণি ও শাখা', [c.classLabel, c.section].filter(Boolean).join(' - ')]);
+    rows.push(['রোল', c.roll]);
+  } else {
+    rows.push(['পদবি/বিভাগ', c.classLabel]);
+    rows.push(['কোড', c.section]);
+    rows.push(['সিরিয়াল', c.roll]);
+  }
+  rows.push(['সেশন', c.session]);
+  rows.push(['আইডি নম্বর', c.idNo]);
+  if (c.blood) rows.push(['রক্তের গ্রুপ', c.blood]);
+  if (c.scanCount) rows.push(['মোট স্ক্যান', String(c.scanCount) + ' বার']);
+  details.innerHTML = rows
+    .filter(r => r[1])
+    .map(r => '<div><b>' + r[0] + ':</b> ' + String(r[1]).replace(/[<>]/g, '') + '</div>')
+    .join('');
+}
+
+const verifyIdParam = new URLSearchParams(window.location.search).get('verify');
+if (verifyIdParam) {
+  showVerifyResult(verifyIdParam);
+} else {
+  setType('student');
+  loadFromUrlParams();
+}
+</script>
+
+</body>
+</html>

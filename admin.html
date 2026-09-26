@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="bn" class="notranslate" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>নোটিশ ম্যানেজমেন্ট — ছাগলধরা উচ্চ বিদ্যালয়</title>
+<link rel="icon" href="logo-crisp.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
+<style>
+  :root{
+    --accent:#d4af37; --accent-hover:#c49a2e;
+    --bg-main:#0b1120; --card-bg:#141c2e; --text-main:#eef2f7; --text-muted:#94a3b8;
+    --border-col:#233047;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; min-height:100vh; background:linear-gradient(180deg,#0b1120,#0f1a2b);
+    color:var(--text-main); font-family:'Hind Siliguri', sans-serif;
+    padding:20px 14px 60px;
+  }
+  .wrap{ max-width:640px; margin:0 auto; }
+  header.top{ text-align:center; margin-bottom:20px; }
+  header.top img{ width:56px; height:56px; border-radius:14px; margin-bottom:8px; }
+  header.top h1{ font-size:1.2rem; margin:0 0 4px; color:var(--accent); }
+  header.top p{ font-size:0.82rem; color:var(--text-muted); margin:0; }
+
+  /* ===== Neomorphism (Soft UI) লেয়ার — রঙ অপরিবর্তিত, শুধু ডার্ক ব্যাকগ্রাউন্ডের
+     উপর দুই-টোন সফট শ্যাডো যোগ করা হয়েছে ===== */
+  :root{
+    --neu-distance: 9px; --neu-blur: 20px;
+    --neu-light: rgba(255,255,255,0.06); --neu-dark: rgba(0,0,0,0.7);
+  }
+  .card, header.top img, .btn, .msg{
+    border: none !important;
+    box-shadow:
+      var(--neu-distance) var(--neu-distance) var(--neu-blur) var(--neu-dark),
+      calc(var(--neu-distance) * -1) calc(var(--neu-distance) * -1) var(--neu-blur) var(--neu-light),
+      4px 4px 9px rgba(0,0,0,0.5),
+      -4px -4px 9px rgba(255,255,255,0.04)
+      !important;
+  }
+  .btn:active{
+    box-shadow:
+      inset var(--neu-distance) var(--neu-distance) var(--neu-blur) var(--neu-dark),
+      inset calc(var(--neu-distance) * -1) calc(var(--neu-distance) * -1) var(--neu-blur) var(--neu-light)
+      !important;
+  }
+  input[type=text], input[type=password], input[type=date], textarea{
+    border: none !important;
+    box-shadow:
+      inset 6px 6px 12px var(--neu-dark),
+      inset -6px -6px 12px var(--neu-light)
+      !important;
+  }
+  .card{
+    background:var(--card-bg); border:1px solid var(--border-col); border-radius:16px;
+    padding:20px; margin-bottom:18px; box-shadow:0 10px 25px rgba(0,0,0,0.25);
+  }
+  .card h2{ font-size:1rem; margin:0 0 14px; color:var(--accent); }
+
+  label{ display:block; font-size:0.85rem; color:var(--text-muted); margin:12px 0 6px; }
+  input[type=text], input[type=password], input[type=date], textarea{
+    width:100%; padding:11px 12px; border-radius:10px; border:1px solid var(--border-col);
+    background:#0c1424; color:var(--text-main); font-family:inherit; font-size:0.95rem;
+  }
+  textarea{ min-height:80px; resize:vertical; }
+  input:focus, textarea:focus{ outline:none; border-color:var(--accent); }
+
+  .btn{
+    display:inline-block; border:none; border-radius:10px; padding:11px 18px;
+    font-weight:600; font-size:0.92rem; cursor:pointer; font-family:inherit;
+  }
+  .btn-gold{ background:var(--accent); color:#1a1406; }
+  .btn-gold:hover{ background:var(--accent-hover); }
+  .btn-danger{ background:#3a1414; color:#ff8a8a; border:1px solid #5c1f1f; }
+  .btn-danger:hover{ background:#4a1919; }
+  .btn-block{ width:100%; margin-top:16px; }
+  .btn[disabled]{ opacity:0.6; cursor:not-allowed; }
+
+  .msg{ margin-top:12px; font-size:0.85rem; padding:10px 12px; border-radius:8px; display:none; }
+  .msg.show{ display:block; }
+  .msg.ok{ background:rgba(34,197,94,0.12); color:#4ade80; border:1px solid rgba(34,197,94,0.3); }
+  .msg.err{ background:rgba(239,68,68,0.12); color:#f87171; border:1px solid rgba(239,68,68,0.3); }
+
+  .login-wrap{ max-width:340px; margin:60px auto 0; }
+
+  /* ============================================================
+     হাইপার-রিয়েলিস্টিক মোমবাতি লগইন — শুধু লগইন কার্ডের জন্য
+     ============================================================ */
+  :root{
+    --flame-core:#ffffff; --flame-mid:#ffaa00; --flame-outer:#ff3300;
+  }
+
+  .candle-login-wrap{
+    position:relative; display:flex; flex-direction:column; align-items:center;
+    width:100%; max-width:420px; margin:40px auto 0; padding:0 10px;
+  }
+
+  .candle-assembly{
+    position:relative; cursor:pointer; display:flex; flex-direction:column;
+    align-items:center; z-index:10;
+    transition: transform 0.6s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .candle-assembly:hover{ transform: scale(1.02); }
+
+  .light-aura{
+    position:absolute; top:-80px; width:400px; height:400px; border-radius:50%;
+    background: radial-gradient(circle, rgba(255,160,50,0.38) 0%, rgba(255,60,0,0.12) 40%, transparent 75%);
+    opacity:0; transform: scale(0.2);
+    transition: all 0.8s cubic-bezier(0.16,1,0.3,1);
+    pointer-events:none; filter: blur(20px);
+  }
+  .candle-assembly.is-lit .light-aura{
+    opacity:1; transform: scale(1); animation: chsAuraFlicker 0.1s infinite alternate ease-in-out;
+  }
+  .candle-assembly.is-angry .light-aura{
+    background: radial-gradient(circle, rgba(255,0,0,0.9) 0%, rgba(180,0,0,0.55) 45%, rgba(0,0,0,0.95) 80%);
+    transform: scale(2.4) !important; filter: blur(25px);
+    animation: chsDemonicAuraPulse 0.08s infinite alternate ease-in-out !important;
+  }
+
+  .flame-wrapper{
+    position:relative; width:32px; height:70px; margin-bottom:-12px;
+    opacity:0; transform: scale(0.01) translateY(40px);
+    transition: all 0.5s cubic-bezier(0.175,0.885,0.32,1.275);
+  }
+  .candle-assembly.is-lit .flame-wrapper{ opacity:1; transform: scale(1) translateY(0); }
+  .candle-assembly.is-angry .flame-wrapper{ transform: scale(2.6) translateY(-38px) !important; }
+
+  .flame-core{
+    position:absolute; bottom:4px; left:50%; transform: translateX(-50%);
+    width:10px; height:24px; background: var(--flame-core);
+    border-radius: 50% 50% 35% 35% / 60% 60% 40% 40%;
+    box-shadow: 0 0 18px var(--flame-core), 0 0 35px var(--flame-core); z-index:3;
+  }
+  .candle-assembly.is-angry .flame-core{
+    background:#ffff55; box-shadow:0 0 30px #ff0000, 0 0 50px #ff0000; height:34px; width:14px;
+  }
+  .flame-body{
+    position:absolute; bottom:0; left:50%; transform: translateX(-50%);
+    width:24px; height:58px;
+    background: linear-gradient(to top, var(--flame-outer), var(--flame-mid) 60%, transparent 100%);
+    border-radius: 50% 50% 35% 35% / 60% 60% 40% 40%;
+    filter: drop-shadow(0 0 20px rgba(255,90,0,0.95)); z-index:2;
+    animation: chsFlameMotion 0.12s infinite alternate ease-in-out;
+    transform-origin: center bottom;
+  }
+  .candle-assembly.is-angry .flame-body{
+    background: linear-gradient(to top, #0d0000 0%, #990000 25%, #ff1100 65%, #ffff00 100%);
+    filter: drop-shadow(0 0 45px #ff0000) drop-shadow(0 0 80px #880000);
+    animation: chsTerrifyingFlameMotion 0.04s infinite alternate ease-in-out !important;
+    border-radius: 40% 40% 20% 20% / 80% 80% 20% 20%;
+  }
+  .flame-blue{
+    position:absolute; bottom:-4px; left:50%; transform: translateX(-50%);
+    width:18px; height:14px; background:#0088ff; border-radius:50%;
+    opacity:0.9; z-index:1; filter: blur(1px);
+  }
+
+  .sparks-container{
+    position:absolute; top:-70px; width:120px; height:120px; pointer-events:none;
+    display:none; z-index:6;
+  }
+  .candle-assembly.is-angry .sparks-container{ display:block; }
+  .spark{
+    position:absolute; width:4px; height:4px; background:#ffffaa; border-radius:50%;
+    box-shadow:0 0 10px #ff0000; opacity:0;
+  }
+  .spark:nth-child(1){ left:20%; animation: chsSparkFly1 0.4s infinite linear; }
+  .spark:nth-child(2){ left:50%; animation: chsSparkFly2 0.3s infinite linear 0.1s; }
+  .spark:nth-child(3){ left:80%; animation: chsSparkFly1 0.5s infinite linear 0.2s; }
+  .spark:nth-child(4){ left:35%; animation: chsSparkFly2 0.35s infinite linear 0.15s; }
+
+  .candle-assembly .wick{
+    width:4px; height:16px; background: linear-gradient(to bottom, #000, #444);
+    border-radius:2px; z-index:4;
+  }
+
+  .candle-assembly .smoke{
+    position:absolute; top:-10px; left:50%; width:8px; height:8px;
+    background: rgba(220,220,220,0.6); border-radius:50%; transform: translateX(-50%);
+    opacity:0; pointer-events:none; filter: blur(3px);
+  }
+  .candle-assembly.extinguish-smoke .smoke{ animation: chsHeavySmokeRise 1.5s ease-out forwards; }
+
+  .candle-body-wrapper{ position:relative; width:62px; height:130px; }
+  .candle-top-rim{
+    position:absolute; top:0; left:0; width:100%; height:14px;
+    background: radial-gradient(ellipse at center, #c2baa8 0%, #f7f3e9 70%, #d1c8b8 100%);
+    border-radius:50%; z-index:4; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+  }
+  .wax-drip{
+    position:absolute; background: linear-gradient(180deg, #ffffff 0%, #e3ded1 100%);
+    border-radius:0 0 6px 6px; z-index:5; box-shadow: 1px 2px 3px rgba(0,0,0,0.25);
+  }
+  .drip-1{ top:8px; left:6px; width:8px; height:35px; border-radius:0 0 4px 4px; }
+  .drip-2{ top:10px; left:22px; width:10px; height:22px; }
+  .drip-3{ top:8px; right:8px; width:7px; height:42px; }
+
+  .candle-body{
+    position:relative; width:100%; height:100%;
+    background: linear-gradient(90deg, #9e9587 0%, #ded8cb 25%, #ffffff 50%, #d6cfc1 75%, #827869 100%);
+    border-radius:8px 8px 12px 12px;
+    box-shadow:
+      inset -8px 0 15px rgba(0,0,0,0.4),
+      inset 8px 0 12px rgba(255,255,255,0.8),
+      0 18px 35px rgba(0,0,0,0.7);
+    display:flex; justify-content:center; transition: background 0.5s;
+  }
+  .candle-assembly.is-angry .candle-body{
+    background: linear-gradient(90deg, #3d0e0e 0%, #7a1d1d 25%, #a82e2e 50%, #691717 75%, #240505 100%);
+  }
+
+  .candle-face{ position:absolute; top:32px; width:42px; height:32px; z-index:6; transition: all 0.3s ease; }
+  .eyebrows{ position:absolute; top:-3px; width:100%; display:flex; justify-content:space-between; transition: all 0.3s ease; }
+  .eyebrow{
+    width:15px; height:4px; background:#2a1f1d; border-radius:3px;
+    box-shadow:0 2px 3px rgba(0,0,0,0.5);
+    transition: all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);
+  }
+  .eyes{ display:flex; justify-content:space-between; width:100%; position:absolute; top:8px; }
+  .eye-socket{
+    width:13px; height:13px;
+    background: radial-gradient(circle, #f0e6df 30%, #b5a499 80%, #4a3c35 100%);
+    border-radius:50%; position:relative;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.8), 0 1px 2px rgba(255,255,255,0.4);
+    overflow:hidden; display:flex; justify-content:center; align-items:center; transition: all 0.3s ease;
+  }
+  .iris{
+    width:7px; height:7px;
+    background: radial-gradient(circle, #000 40%, #4a2e18 70%, #2b170a 100%);
+    border-radius:50%; position:absolute; display:flex; justify-content:center; align-items:center;
+    transition: transform 0.05s ease-out;
+  }
+  .iris::after{
+    content:''; position:absolute; top:1px; right:1px; width:2px; height:2px;
+    background:#ffffff; border-radius:50%; box-shadow:0 0 2px #fff;
+  }
+  .mouth-container{
+    position:absolute; bottom:0; left:50%; transform: translateX(-50%);
+    width:18px; height:9px; transition: all 0.3s ease;
+  }
+  .mouth-cavity{
+    width:100%; height:100%; background:#1a0303; border-radius:2px 2px 10px 10px;
+    border-top:1px solid #4a3c35; box-shadow: inset 0 3px 6px rgba(0,0,0,0.95);
+    position:relative; overflow:hidden; transition: all 0.3s ease;
+  }
+  .teeth-top{
+    position:absolute; top:0; left:50%; transform: translateX(-50%);
+    width:75%; height:2px; background:#eee8dc; border-radius:0 0 2px 2px; opacity:0.85;
+  }
+
+  .candle-assembly.is-angry .eyebrows{ animation: chsBrowTwitch 0.08s infinite alternate; }
+  .candle-assembly.is-angry .eyebrow.left{ transform: rotate(45deg) translate(3px,5px) scaleY(1.4); background:#000; box-shadow:0 0 6px #ff0000; }
+  .candle-assembly.is-angry .eyebrow.right{ transform: rotate(-45deg) translate(-3px,5px) scaleY(1.4); background:#000; box-shadow:0 0 6px #ff0000; }
+  .candle-assembly.is-angry .eye-socket{
+    background: radial-gradient(circle, #ff2200 20%, #800000 70%, #200000 100%);
+    box-shadow: inset 0 0 8px #000, 0 0 10px rgba(255,0,0,0.9); height:10px;
+  }
+  .candle-assembly.is-angry .iris{
+    background: radial-gradient(circle, #000 30%, #ffea00 80%, #ff0000 100%);
+    box-shadow:0 0 8px #ff0000; width:6px; height:6px; transform: translate(0,0) !important;
+  }
+  .candle-assembly.is-angry .mouth-container{ width:24px; height:16px; animation: chsJawChatter 0.06s infinite alternate; }
+  .candle-assembly.is-angry .mouth-cavity{
+    background: linear-gradient(to bottom, #000000, #ff0000); border-radius:4px 4px 14px 14px;
+    border:1px solid #ff3300; box-shadow: inset 0 0 12px #ff0000, 0 0 15px #ff0000;
+  }
+  .candle-assembly.is-angry .teeth-top{ height:3px; width:90%; background:#fff; opacity:1; }
+
+  .candle-assembly.is-happy .eye-socket{ background:transparent; box-shadow:none; }
+  .candle-assembly.is-happy .iris{ display:none; }
+  .candle-assembly.is-happy .eye-socket::after{
+    content:''; position:absolute; width:100%; height:100%;
+    border-top:3px solid #2a1f1d; border-radius:50% 50% 0 0;
+  }
+  .candle-assembly.is-happy .mouth-cavity{ background:#2a1f1d; border-radius:0 0 14px 14px; }
+
+  .candle-stand{
+    position:relative; width:100px; height:16px;
+    background: linear-gradient(90deg, #3d2b0b, #9e750c, #ffd700, #9e750c, #2e2007);
+    border-radius:4px; margin-top:-2px;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.85), inset 0 2px 2px rgba(255,255,255,0.7);
+  }
+  .candle-stand-base{
+    width:130px; height:10px;
+    background: linear-gradient(90deg, #241804, #735305, #b89525, #735305, #191002);
+    border-radius:2px 2px 8px 8px; margin-top:1px;
+  }
+
+  .matchstick{
+    position:absolute; top:-80px; right:-80px; width:80px; height:6px;
+    background:#d2b48c; border-radius:0 3px 3px 0; transform: rotate(-45deg);
+    opacity:0; pointer-events:none; z-index:20;
+  }
+  .matchstick::before{
+    content:''; position:absolute; left:-8px; top:-2px; width:10px; height:10px;
+    background:#8b0000; border-radius:50%;
+  }
+  .matchstick.strike{ animation: chsMatchStrike 0.8s cubic-bezier(0.25,1,0.5,1) forwards; }
+
+  .instruction-tag{
+    margin-top:25px; color:#94a3b8; font-size:0.85rem; letter-spacing:0.12em;
+    text-transform:uppercase; font-weight:500; transition: all 0.4s ease;
+    animation: chsPulseText 2s infinite alternate; text-align:center;
+  }
+  .instruction-tag.error-text{
+    color:#ff0000; font-weight:800; text-shadow:0 0 10px #ff0000;
+    animation: chsViolentShake 0.1s infinite;
+  }
+  .instruction-tag.success-text{ color:#10b981; font-weight:700; }
+
+  .login-card-container{
+    width:100%; max-height:0; opacity:0; overflow:hidden;
+    transition: all 0.8s cubic-bezier(0.16,1,0.3,1);
+    transform: translateY(40px) scale(0.95);
+  }
+  .candle-assembly.is-lit + .login-card-container{
+    max-height:500px; opacity:1; margin-top:30px; transform: translateY(0) scale(1);
+  }
+  .login-card{
+    background: rgba(18,15,25,0.7);
+    backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border:1px solid rgba(255,180,100,0.15); border-radius:24px; padding:30px 24px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+    transition: border 0.4s;
+  }
+  .candle-assembly.is-angry + .login-card-container .login-card{
+    border-color: rgba(255,0,0,0.6); box-shadow: 0 0 30px rgba(255,0,0,0.4);
+  }
+  .login-card h2{ color:#f8fafc; font-size:1.4rem; font-weight:700; text-align:center; margin:0 0 6px; }
+  .login-card p.subtitle{ color:#94a3b8; font-size:0.82rem; text-align:center; margin:0 0 20px; }
+
+  @keyframes chsAuraFlicker{ 0%{opacity:0.9;} 100%{opacity:1;} }
+  @keyframes chsDemonicAuraPulse{ 0%{ transform: scale(2.2); opacity:0.85; } 100%{ transform: scale(2.7); opacity:1; } }
+  @keyframes chsBrowTwitch{ 0%{ transform: translateY(0); } 100%{ transform: translateY(-1.5px); } }
+  @keyframes chsJawChatter{ 0%{ transform: translateX(-50%) translateY(0); } 100%{ transform: translateX(-50%) translateY(2px); } }
+  @keyframes chsFlameMotion{
+    0%{ transform: translateX(-50%) rotate(-2deg) scaleX(0.95); }
+    100%{ transform: translateX(-50%) rotate(2deg) scaleX(1.05); }
+  }
+  @keyframes chsTerrifyingFlameMotion{
+    0%{ transform: translateX(-50%) rotate(-18deg) scaleY(1.3) scaleX(0.8); }
+    25%{ transform: translateX(-48%) rotate(15deg) scaleY(0.9) scaleX(1.2); }
+    50%{ transform: translateX(-52%) rotate(-12deg) scaleY(1.4) scaleX(0.9); }
+    75%{ transform: translateX(-49%) rotate(20deg) scaleY(1.1) scaleX(1.1); }
+    100%{ transform: translateX(-50%) rotate(-5deg) scaleY(1.5) scaleX(0.7); }
+  }
+  @keyframes chsSparkFly1{
+    0%{ opacity:1; transform: translateY(0) scale(1); }
+    100%{ opacity:0; transform: translateY(-90px) translateX(-30px) scale(0.2); }
+  }
+  @keyframes chsSparkFly2{
+    0%{ opacity:1; transform: translateY(0) scale(1); }
+    100%{ opacity:0; transform: translateY(-110px) translateX(30px) scale(0.1); }
+  }
+  @keyframes chsMatchStrike{
+    0%{ opacity:0; transform: translate(50px,-50px) rotate(-45deg); }
+    30%{ opacity:1; transform: translate(-10px,30px) rotate(-20deg); }
+    50%{ transform: translate(-35px,45px) rotate(0deg); box-shadow:-10px 0 20px #ffaa00, -20px 0 30px #ff4500; }
+    70%{ opacity:1; transform: translate(-40px,40px) rotate(10deg); }
+    100%{ opacity:0; transform: translate(-80px,20px) rotate(20deg); }
+  }
+  @keyframes chsHeavySmokeRise{
+    0%{ opacity:0.9; transform: translate(-50%,0) scale(1); }
+    50%{ opacity:0.6; transform: translate(-40%,-30px) scale(2.5); }
+    100%{ opacity:0; transform: translate(-60%,-80px) scale(4); }
+  }
+  @keyframes chsPulseText{ 0%{ opacity:0.4; } 100%{ opacity:0.9; } }
+  @keyframes chsViolentShake{
+    0%,100%{ transform: translateX(0); }
+    20%,60%{ transform: translateX(-12px); }
+    40%,80%{ transform: translateX(12px); }
+  }
+
+  body.is-lit{
+    background: radial-gradient(circle at 50% 38%, #2d1808 0%, #110903 50%, #030305 90%) !important;
+  }
+  body.is-angry{
+    background: radial-gradient(circle at 50% 35%, #600200 0%, #250000 45%, #020000 85%) !important;
+    animation: chsDemonicBackgroundPulse 0.12s infinite alternate ease-in-out;
+  }
+  @keyframes chsDemonicBackgroundPulse{
+    0%{ background: radial-gradient(circle at 50% 35%, #600200 0%, #250000 45%, #020000 85%); }
+    100%{ background: radial-gradient(circle at 50% 35%, #880000 0%, #350000 50%, #000000 90%); }
+  }
+  body.is-angry .candle-login-wrap{ animation: chsViolentScreenShake 0.08s infinite ease-in-out; }
+  @keyframes chsViolentScreenShake{
+    0%{ transform: translate(0,0) rotate(0deg); }
+    25%{ transform: translate(-3px,3px) rotate(-0.5deg); }
+    50%{ transform: translate(3px,-2px) rotate(0.5deg); }
+    75%{ transform: translate(-2px,-3px) rotate(-0.5deg); }
+    100%{ transform: translate(2px,2px) rotate(0.5deg); }
+  }
+
+
+  .notice-row{
+    display:flex; gap:12px; align-items:flex-start; justify-content:space-between;
+    padding:12px 0; border-bottom:1px solid var(--border-col);
+  }
+  .notice-row:last-child{ border-bottom:none; }
+  .notice-row .n-date{ font-size:0.75rem; color:var(--accent); font-weight:600; white-space:nowrap; padding-top:2px; }
+  .notice-row .n-title{ font-weight:600; font-size:0.92rem; margin:0 0 3px; }
+  .notice-row .n-desc{ font-size:0.8rem; color:var(--text-muted); margin:0; }
+  .notice-row .n-actions{ flex-shrink:0; }
+  .notice-row .n-del{
+    background:transparent; border:1px solid #5c1f1f; color:#ff8a8a; border-radius:8px;
+    padding:6px 10px; font-size:0.78rem; cursor:pointer; font-family:inherit;
+  }
+  .empty-hint{ color:var(--text-muted); font-size:0.85rem; text-align:center; padding:16px 0; }
+  .top-actions{ display:flex; justify-content:flex-end; margin-bottom:10px; }
+  .top-actions a{ color:var(--text-muted); font-size:0.8rem; text-decoration:none; }
+  .top-actions a:hover{ color:var(--accent); }
+  .spinner{ display:inline-block; width:14px; height:14px; border:2px solid rgba(255,255,255,0.3); border-top-color:#1a1406; border-radius:50%; animation:spin 0.7s linear infinite; vertical-align:-2px; margin-right:6px; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  .complaint-row{
+    padding:12px 0; border-bottom:1px solid var(--border-col);
+  }
+  .complaint-row:last-child{ border-bottom:none; }
+  .complaint-row .c-top{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:5px; }
+  .complaint-row .c-meta{ font-size:0.78rem; color:var(--text-muted); }
+  .complaint-row .c-details{ font-size:0.88rem; margin:4px 0 8px; white-space:pre-wrap; }
+  .status-badge{ font-size:0.72rem; padding:3px 9px; border-radius:20px; font-weight:600; white-space:nowrap; }
+  .status-new{ background:rgba(239,68,68,0.15); color:#f87171; }
+  .status-seen{ background:rgba(234,179,8,0.15); color:#facc15; }
+  .status-resolved{ background:rgba(34,197,94,0.15); color:#4ade80; }
+  .c-actions{ display:flex; gap:8px; flex-wrap:wrap; }
+  .c-actions button{
+    background:transparent; border:1px solid var(--border-col); color:var(--text-main);
+    border-radius:8px; padding:6px 10px; font-size:0.76rem; cursor:pointer; font-family:inherit;
+  }
+  .c-actions button:hover{ border-color:var(--accent); }
+  .c-actions .n-del{ border-color:#5c1f1f; color:#ff8a8a; }
+
+  .blood-history-item{
+    font-size:0.78rem; color:var(--text-muted); padding:8px 0; border-bottom:1px solid var(--border-col);
+  }
+  .blood-history-item:last-child{ border-bottom:none; }
+  .blood-history-item b{ color:var(--text-main); }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <picture><source srcset="logo-crisp.webp" type="image/webp"><img src="logo-crisp.png" alt="School Logo" decoding="async"></picture>
+    <h1>নোটিশ ম্যানেজমেন্ট প্যানেল</h1>
+    <p>ছাগলধরা উচ্চ বিদ্যালয় — শুধুমাত্র প্রশাসনের জন্য</p>
+  </header>
+
+  <!-- ===== লগইন কার্ড: হাইপার-রিয়েলিস্টিক মোমবাতি কনসেপ্ট ===== -->
+  <div id="loginCard" class="candle-login-wrap">
+    <div class="candle-assembly" id="candleInteractive">
+      <div class="light-aura"></div>
+
+      <div class="sparks-container">
+        <div class="spark"></div>
+        <div class="spark"></div>
+        <div class="spark"></div>
+        <div class="spark"></div>
+      </div>
+
+      <div class="matchstick" id="matchstick"></div>
+      <div class="smoke"></div>
+
+      <div class="flame-wrapper">
+        <div class="flame-core"></div>
+        <div class="flame-body"></div>
+        <div class="flame-blue"></div>
+      </div>
+
+      <div class="wick"></div>
+
+      <!-- থ্রিডি ড্রপসহ মোমের বডি -->
+      <div class="candle-body-wrapper">
+        <div class="candle-top-rim"></div>
+        <div class="wax-drip drip-1"></div>
+        <div class="wax-drip drip-2"></div>
+        <div class="wax-drip drip-3"></div>
+
+        <div class="candle-body">
+          <div class="candle-face">
+            <div class="eyebrows">
+              <div class="eyebrow left"></div>
+              <div class="eyebrow right"></div>
+            </div>
+            <div class="eyes">
+              <div class="eye-socket"><div class="iris" id="irisLeft"></div></div>
+              <div class="eye-socket"><div class="iris" id="irisRight"></div></div>
+            </div>
+            <div class="mouth-container">
+              <div class="mouth-cavity"><div class="teeth-top"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="candle-stand"></div>
+      <div class="candle-stand-base"></div>
+
+      <span class="instruction-tag" id="instructionTag">স্পর্শ করে আলো জ্বালান</span>
+    </div>
+
+    <div class="login-card-container">
+      <div class="login-card">
+        <h2>প্রবেশ করুন</h2>
+        <p class="subtitle">অ্যাডমিন প্যানেলে ঢুকতে তথ্য দিন</p>
+
+        <label for="pwInput">অ্যাডমিন পাসওয়ার্ড</label>
+        <input type="password" id="pwInput" placeholder="পাসওয়ার্ড লিখুন" autocomplete="off">
+
+        <label for="codeInput">Authenticator অ্যাপের ৬-ডিজিট কোড</label>
+        <input type="text" id="codeInput" placeholder="যেমনঃ 123456" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off">
+
+        <button class="btn btn-gold btn-block" id="loginBtn">প্রবেশ করুন</button>
+        <div class="msg err" id="loginMsg"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== মূল প্যানেল (লগইনের পর দেখা যাবে) ===== -->
+  <div id="panelArea" style="display:none;">
+    <div class="top-actions">
+      <a href="school.html">← ওয়েবসাইটে ফিরে যান</a>
+    </div>
+
+    <div class="card">
+      <h2>নতুন নোটিশ প্রকাশ করুন</h2>
+      <p style="font-size:0.78rem; color:var(--text-muted); margin:-6px 0 0;">প্রকাশ করার সাথে সাথেই যারা নোটিফিকেশন চালু করে রেখেছে, তাদের ফোনে অটোমেটিক নোটিফিকেশন চলে যাবে।</p>
+
+      <label for="fDate">তারিখ</label>
+      <input type="date" id="fDate">
+
+      <label for="fTitleBn">শিরোনাম (বাংলা) *</label>
+      <input type="text" id="fTitleBn" placeholder="যেমনঃ নির্বাচনী পরীক্ষার রুটিন প্রকাশিত হয়েছে">
+
+      <label for="fTitleEn">শিরোনাম (English) — না দিলে বাংলাটাই ব্যবহার হবে</label>
+      <input type="text" id="fTitleEn" placeholder="Optional">
+
+      <label for="fDescBn">বিস্তারিত (বাংলা) *</label>
+      <textarea id="fDescBn" placeholder="নোটিশের বিস্তারিত লিখুন..."></textarea>
+
+      <label for="fDescEn">বিস্তারিত (English) — না দিলে বাংলাটাই ব্যবহার হবে</label>
+      <textarea id="fDescEn" placeholder="Optional"></textarea>
+
+      <label style="display:flex; align-items:center; gap:8px; font-weight:normal; margin-top:10px;">
+        <input type="checkbox" id="fIsEmergency" style="width:auto; margin:0;">
+        🚨 এটা জরুরি ব্যানার হিসেবেও ওয়েবসাইটের একদম উপরে দেখাতে চাই
+      </label>
+
+      <button class="btn btn-gold btn-block" id="publishBtn">প্রকাশ করুন ও নোটিফিকেশন পাঠান</button>
+      <div class="msg" id="publishMsg"></div>
+    </div>
+
+    <div class="card">
+      <h2>প্রকাশিত নোটিশসমূহ</h2>
+      <div id="noticesList"><p class="empty-hint">লোড হচ্ছে...</p></div>
+    </div>
+
+    <div class="card">
+      <h2>🩸 জরুরি রক্তদান নোটিফিকেশন</h2>
+      <p style="font-size:0.78rem; color:var(--text-muted); margin:-6px 0 0;">যারা "রক্তদান" ক্যাটাগরির নোটিফিকেশন চালু রেখেছেন, তাদের সবার ফোনে সাথে সাথে এই বার্তা চলে যাবে।</p>
+
+      <label for="bGroup">রক্তের গ্রুপ *</label>
+      <input type="text" id="bGroup" placeholder="যেমনঃ B+ (পজিটিভ)">
+
+      <label for="bLocation">স্থান</label>
+      <input type="text" id="bLocation" placeholder="যেমনঃ ছাগলধরা বাজার, রংপুর">
+
+      <label for="bContact">যোগাযোগ নম্বর *</label>
+      <input type="text" id="bContact" placeholder="যেমনঃ ০১৭XXXXXXXX">
+
+      <label for="bNote">অতিরিক্ত তথ্য (ঐচ্ছিক)</label>
+      <textarea id="bNote" placeholder="যেমনঃ আজ রাতের মধ্যেই প্রয়োজন"></textarea>
+
+      <button class="btn btn-danger btn-block" id="bloodAlertBtn">🩸 এখনই অ্যালার্ট পাঠান</button>
+      <div class="msg" id="bloodAlertMsg"></div>
+
+      <div id="bloodAlertHistory" style="margin-top:18px;"></div>
+    </div>
+
+    <div class="card">
+      <h2>অভিযোগ ড্যাশবোর্ড</h2>
+      <p style="font-size:0.78rem; color:var(--text-muted); margin:-6px 0 0;">এগুলো ইমেইলে যাওয়া অভিযোগের একটা কপি মাত্র — আসল অভিযোগ ইমেইলেই পড়ুন, এখানে শুধু ট্র্যাক করুন।</p>
+      <div id="complaintsList" style="margin-top:14px;"><p class="empty-hint">লোড হচ্ছে...</p></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const ADMIN_KEY_STORAGE = 'chs_admin_key';
+
+  function getAdminKey() {
+    try { return sessionStorage.getItem(ADMIN_KEY_STORAGE) || ''; } catch (e) { return ''; }
+  }
+  function setAdminKey(key) {
+    try { sessionStorage.setItem(ADMIN_KEY_STORAGE, key); } catch (e) {}
+  }
+  function clearAdminKey() {
+    try { sessionStorage.removeItem(ADMIN_KEY_STORAGE); } catch (e) {}
+  }
+
+  function showMsg(el, text, ok) {
+    el.textContent = text;
+    el.className = 'msg show ' + (ok ? 'ok' : 'err');
+  }
+  function hideMsg(el) {
+    el.className = 'msg';
+  }
+
+  const loginCard = document.getElementById('loginCard');
+  const panelArea = document.getElementById('panelArea');
+  const loginBtn = document.getElementById('loginBtn');
+  const pwInput = document.getElementById('pwInput');
+  const codeInput = document.getElementById('codeInput');
+  const loginMsg = document.getElementById('loginMsg');
+
+  // ===== মোমবাতি লগইন ভিজুয়াল/সাউন্ড লজিক (প্রকৃত পাসওয়ার্ড যাচাইয়ের সাথে সংযুক্ত) =====
+  const candle = document.getElementById('candleInteractive');
+  const matchstick = document.getElementById('matchstick');
+  const instructionTag = document.getElementById('instructionTag');
+  const irisLeft = document.getElementById('irisLeft');
+  const irisRight = document.getElementById('irisRight');
+  let candleIsLit = false;
+  let candleBusy = false;
+
+  document.addEventListener('mousemove', (e) => {
+    if (!candle || candle.classList.contains('is-angry')) return;
+    const eyes = document.querySelectorAll('.eye-socket');
+    eyes.forEach(eye => {
+      const rect = eye.getBoundingClientRect();
+      const eyeX = rect.left + rect.width / 2;
+      const eyeY = rect.top + rect.height / 2;
+      const angle = Math.atan2(e.clientY - eyeY, e.clientX - eyeX);
+      const distance = Math.min(3, Math.hypot(e.clientX - eyeX, e.clientY - eyeY) / 25);
+      const irisX = Math.cos(angle) * distance;
+      const irisY = Math.sin(angle) * distance;
+      if (irisLeft) irisLeft.style.transform = `translate(${irisX}px, ${irisY}px)`;
+      if (irisRight) irisRight.style.transform = `translate(${irisX}px, ${irisY}px)`;
+    });
+  });
+
+  const CandleAudioCtx = window.AudioContext || window.webkitAudioContext;
+  let candleAudioCtx = null;
+  function getCandleAudioContext() {
+    if (!candleAudioCtx && CandleAudioCtx) {
+      try { candleAudioCtx = new CandleAudioCtx(); } catch (e) { candleAudioCtx = null; }
+    }
+    if (candleAudioCtx && candleAudioCtx.state === 'suspended') candleAudioCtx.resume();
+    return candleAudioCtx;
+  }
+  function playMatchStrikeSound() {
+    const ctx = getCandleAudioContext(); if (!ctx) return;
+    try {
+      const bufferSize = ctx.sampleRate * 0.4;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+      const noise = ctx.createBufferSource(); noise.buffer = buffer;
+      const filter = ctx.createBiquadFilter(); filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(1200, ctx.currentTime);
+      filter.Q.setValueAtTime(3, ctx.currentTime);
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.5, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+      noise.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+      noise.start();
+    } catch (e) {}
+  }
+  function playBlowOutSound() {
+    const ctx = getCandleAudioContext(); if (!ctx) return;
+    try {
+      const bufferSize = ctx.sampleRate * 0.5;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+      const noise = ctx.createBufferSource(); noise.buffer = buffer;
+      const filter = ctx.createBiquadFilter(); filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(400, ctx.currentTime);
+      filter.frequency.linearRampToValueAtTime(100, ctx.currentTime + 0.4);
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.4, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.45);
+      noise.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+      noise.start(ctx.currentTime);
+    } catch (e) {}
+  }
+  function playTerrifyingAngrySound() {
+    const ctx = getCandleAudioContext(); if (!ctx) return;
+    try {
+      const osc1 = ctx.createOscillator(); const osc2 = ctx.createOscillator(); const gain = ctx.createGain();
+      osc1.type = 'sawtooth'; osc2.type = 'square';
+      osc1.frequency.setValueAtTime(80, ctx.currentTime);
+      osc1.frequency.exponentialRampToValueAtTime(25, ctx.currentTime + 0.8);
+      osc2.frequency.setValueAtTime(85, ctx.currentTime);
+      osc2.frequency.exponentialRampToValueAtTime(20, ctx.currentTime + 0.8);
+      gain.gain.setValueAtTime(0.5, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.85);
+      osc1.connect(gain); osc2.connect(gain); gain.connect(ctx.destination);
+      osc1.start(ctx.currentTime); osc2.start(ctx.currentTime);
+
+      const bufferSize = ctx.sampleRate * 0.8;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+      const noise = ctx.createBufferSource(); noise.buffer = buffer;
+      const filter = ctx.createBiquadFilter(); filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(300, ctx.currentTime);
+      filter.Q.setValueAtTime(1, ctx.currentTime);
+      const noiseGain = ctx.createGain();
+      noiseGain.gain.setValueAtTime(0.6, ctx.currentTime);
+      noiseGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.8);
+      noise.connect(filter); filter.connect(noiseGain); noiseGain.connect(ctx.destination);
+      noise.start(ctx.currentTime);
+    } catch (e) {}
+  }
+
+  function clearCandleBodyClasses() {
+    document.body.classList.remove('is-lit', 'is-angry');
+  }
+
+  if (candle) {
+    candle.addEventListener('click', () => {
+      if (candleBusy) return;
+
+      if (!candleIsLit) {
+        // মোমবাতি জ্বালানো — ম্যাচস্টিক স্ট্রাইক অ্যানিমেশন, তারপর লগইন ফর্ম দেখানো
+        candleBusy = true;
+        matchstick.classList.add('strike');
+        playMatchStrikeSound();
+        setTimeout(() => {
+          candleIsLit = true;
+          candle.classList.add('is-lit');
+          document.body.classList.add('is-lit');
+          instructionTag.textContent = 'নেভাতে স্পর্শ করুন';
+          instructionTag.className = 'instruction-tag';
+          candleBusy = false;
+        }, 400);
+      } else {
+        // জ্বলন্ত মোমবাতিতে আবার ক্লিক করলে নিভে গিয়ে সাইটে ফিরে যাবে (লগইন বাতিল)
+        candleBusy = true;
+        playBlowOutSound();
+        candle.classList.remove('is-lit', 'is-angry', 'is-happy');
+        clearCandleBodyClasses();
+        candle.classList.remove('extinguish-smoke');
+        void candle.offsetWidth;
+        candle.classList.add('extinguish-smoke');
+        instructionTag.textContent = 'বের হয়ে যাচ্ছে...';
+        instructionTag.className = 'instruction-tag';
+        setTimeout(() => { window.location.href = 'school.html'; }, 1200);
+      }
+    });
+  }
+
+  function showPanel() {
+    clearCandleBodyClasses();
+    loginCard.style.display = 'none';
+    panelArea.style.display = 'block';
+    document.getElementById('fDate').value = new Date().toISOString().slice(0, 10);
+    loadNoticesList();
+    loadBloodAlertHistory();
+    loadComplaintsList();
+  }
+
+  // পাসওয়ার্ড ও Authenticator অ্যাপের ৬-ডিজিট কোড — দুটোই সার্ভারে (verify-admin)
+  // যাচাই করা হয়। আগে এই ফাংশনটা কল-ই করা হতো না, ফলে খালি পাসওয়ার্ড দিলেই
+  // ঢুকে যেত (কোড ঠিক/ভুল/ফাঁকা যাই হোক না কেন) — এখন কোড ভুল বা ফাঁকা হলে
+  // ok:false আসবে এবং লগইন আটকে যাবে।
+  async function tryEnter(key, code) {
+    try {
+      const res = await fetch('/api/verify-admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: key, code: code }),
+      });
+      const data = await res.json();
+      return { ok: !!(data && data.ok), reason: data && data.reason };
+    } catch (e) {
+      return { ok: false, reason: 'network' };
+    }
+  }
+
+  loginBtn.addEventListener('click', async () => {
+    const key = pwInput.value.trim();
+    const code = codeInput.value.trim();
+    if (!key) { showMsg(loginMsg, 'পাসওয়ার্ড লিখুন', false); return; }
+    loginBtn.disabled = true;
+    loginBtn.innerHTML = '<span class="spinner"></span>যাচাই হচ্ছে...';
+    const result = await tryEnter(key, code);
+    loginBtn.disabled = false;
+    loginBtn.textContent = 'প্রবেশ করুন';
+    if (result.ok) {
+      setAdminKey(key);
+      hideMsg(loginMsg);
+      if (candle) {
+        candle.classList.remove('is-angry');
+        candle.classList.add('is-happy');
+      }
+      instructionTag.textContent = 'ধন্যবাদ! সফলভাবে লগইন হয়েছে।';
+      instructionTag.className = 'instruction-tag success-text';
+      setTimeout(showPanel, 900);
+    } else {
+      if (candle) {
+        candle.classList.remove('is-happy');
+        candle.classList.add('is-angry');
+        document.body.classList.add('is-angry');
+      }
+      playTerrifyingAngrySound();
+      if (result.reason === 'code') {
+        showMsg(loginMsg, 'Authentication code ভুল, আবার চেষ্টা করুন', false);
+        instructionTag.textContent = 'ভুল কোড! মোমবাতি ক্ষিপ্ত হয়েছে!';
+      } else if (result.reason === 'network') {
+        showMsg(loginMsg, 'সার্ভারে সংযোগ করা যায়নি, আবার চেষ্টা করুন', false);
+        instructionTag.textContent = 'সংযোগ ব্যর্থ! আবার চেষ্টা করুন।';
+      } else {
+        showMsg(loginMsg, 'পাসওয়ার্ড ভুল', false);
+        instructionTag.textContent = 'ভুল পাসওয়ার্ড! মোমবাতি ক্ষিপ্ত হয়েছে!';
+      }
+      instructionTag.className = 'instruction-tag error-text';
+    }
+  });
+
+  pwInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') codeInput.focus();
+  });
+  codeInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') loginBtn.click();
+  });
+
+  // আগে সেভ করা থাকলে সরাসরি ঢুকিয়ে দেওয়া
+  (function initAuth() {
+    const key = getAdminKey();
+    if (key) {
+      showPanel();
+    }
+  })();
+
+  // ===== নোটিশ প্রকাশ =====
+  const publishBtn = document.getElementById('publishBtn');
+  const publishMsg = document.getElementById('publishMsg');
+
+  publishBtn.addEventListener('click', async () => {
+    const titleBn = document.getElementById('fTitleBn').value.trim();
+    const descBn = document.getElementById('fDescBn').value.trim();
+    const titleEn = document.getElementById('fTitleEn').value.trim();
+    const descEn = document.getElementById('fDescEn').value.trim();
+    const dateISO = document.getElementById('fDate').value;
+    const isEmergency = document.getElementById('fIsEmergency').checked;
+
+    if (!titleBn || !descBn) {
+      showMsg(publishMsg, 'শিরোনাম ও বিবরণ (বাংলা) আবশ্যক', false);
+      return;
+    }
+
+    publishBtn.disabled = true;
+    publishBtn.innerHTML = '<span class="spinner"></span>প্রকাশ হচ্ছে...';
+
+    try {
+      const res = await fetch('/api/notices-admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-key': getAdminKey() },
+        body: JSON.stringify({ titleBn, descBn, titleEn, descEn, dateISO, isEmergency }),
+      });
+
+      if (res.status === 401) {
+        clearAdminKey();
+        showMsg(publishMsg, 'সেশনের মেয়াদ শেষ — আবার লগইন করুন', false);
+        panelArea.style.display = 'none';
+        loginCard.style.display = 'block';
+        return;
+      }
+
+      const data = await res.json();
+      if (!res.ok) {
+        showMsg(publishMsg, data.error || 'প্রকাশ করা যায়নি', false);
+        return;
+      }
+
+      const pushNote = data.pushSent === false
+        ? ' (নোটিশ সেভ হয়েছে, তবে নোটিফিকেশন পাঠাতে সমস্যা হয়েছে)'
+        : ' এবং নোটিফিকেশন পাঠানো হয়েছে।';
+      showMsg(publishMsg, 'নোটিশ প্রকাশিত হয়েছে' + pushNote, data.pushSent !== false);
+
+      document.getElementById('fTitleBn').value = '';
+      document.getElementById('fTitleEn').value = '';
+      document.getElementById('fDescBn').value = '';
+      document.getElementById('fDescEn').value = '';
+      document.getElementById('fDate').value = new Date().toISOString().slice(0, 10);
+      document.getElementById('fIsEmergency').checked = false;
+
+      loadNoticesList();
+    } catch (e) {
+      showMsg(publishMsg, 'সার্ভারে সমস্যা হয়েছে, আবার চেষ্টা করুন', false);
+    } finally {
+      publishBtn.disabled = false;
+      publishBtn.textContent = 'প্রকাশ করুন ও নোটিফিকেশন পাঠান';
+    }
+  });
+
+  // ===== নোটিশের তালিকা লোড ও ডিলিট =====
+  function escapeHtml(str) {
+    const d = document.createElement('div');
+    d.textContent = str == null ? '' : String(str);
+    return d.innerHTML;
+  }
+
+  async function loadNoticesList() {
+    const box = document.getElementById('noticesList');
+    box.innerHTML = '<p class="empty-hint">লোড হচ্ছে...</p>';
+    try {
+      const res = await fetch('/api/notices-list');
+      const notices = await res.json();
+      if (!Array.isArray(notices) || notices.length === 0) {
+        box.innerHTML = '<p class="empty-hint">এখনো কোনো নোটিশ প্রকাশ করা হয়নি</p>';
+        return;
+      }
+      box.innerHTML = '';
+      notices.forEach((n) => {
+        const row = document.createElement('div');
+        row.className = 'notice-row';
+        row.innerHTML = `
+          <div class="n-date">${escapeHtml(n.dateISO || '')}</div>
+          <div style="flex:1;">
+            <p class="n-title">${n.isEmergency ? '🚨 ' : ''}${escapeHtml(n.titleBn)}</p>
+            <p class="n-desc">${escapeHtml(n.descBn)}</p>
+          </div>
+          <div class="n-actions"><button class="n-del">মুছুন</button></div>
+        `;
+        row.querySelector('.n-del').addEventListener('click', () => deleteNotice(n.id));
+        box.appendChild(row);
+      });
+    } catch (e) {
+      box.innerHTML = '<p class="empty-hint">নোটিশ লোড করা যায়নি</p>';
+    }
+  }
+
+  async function deleteNotice(id) {
+    if (!confirm('এই নোটিশটি মুছে ফেলতে চান?')) return;
+    try {
+      const res = await fetch('/api/notices-admin?id=' + encodeURIComponent(id), {
+        method: 'DELETE',
+        headers: { 'x-admin-key': getAdminKey() },
+      });
+      if (res.status === 401) {
+        clearAdminKey();
+        alert('সেশনের মেয়াদ শেষ, আবার লগইন করুন');
+        location.reload();
+        return;
+      }
+      loadNoticesList();
+    } catch (e) {
+      alert('মুছতে সমস্যা হয়েছে');
+    }
+  }
+
+  // ===== 🩸 জরুরি রক্তদান নোটিফিকেশন =====
+  const bloodAlertBtn = document.getElementById('bloodAlertBtn');
+  const bloodAlertMsg = document.getElementById('bloodAlertMsg');
+
+  bloodAlertBtn.addEventListener('click', async () => {
+    const bloodGroup = document.getElementById('bGroup').value.trim();
+    const location = document.getElementById('bLocation').value.trim();
+    const contact = document.getElementById('bContact').value.trim();
+    const note = document.getElementById('bNote').value.trim();
+
+    if (!bloodGroup || !contact) {
+      showMsg(bloodAlertMsg, 'রক্তের গ্রুপ ও যোগাযোগ নম্বর আবশ্যক', false);
+      return;
+    }
+    if (!confirm('আপনি কি নিশ্চিত? এখনই সবার ফোনে জরুরি রক্তদান নোটিফিকেশন চলে যাবে।')) return;
+
+    bloodAlertBtn.disabled = true;
+    bloodAlertBtn.innerHTML = '<span class="spinner"></span>পাঠানো হচ্ছে...';
+
+    try {
+      const res = await fetch('/api/blood-alert', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-key': getAdminKey() },
+        body: JSON.stringify({ bloodGroup, location, contact, note }),
+      });
+      if (res.status === 401) {
+        clearAdminKey();
+        showMsg(bloodAlertMsg, 'সেশনের মেয়াদ শেষ — আবার লগইন করুন', false);
+        panelArea.style.display = 'none';
+        loginCard.style.display = 'block';
+        return;
+      }
+      const data = await res.json();
+      if (!res.ok) {
+        showMsg(bloodAlertMsg, data.error || 'পাঠানো যায়নি', false);
+        return;
+      }
+      showMsg(bloodAlertMsg, 'অ্যালার্ট পাঠানো হয়েছে — ' + (data.sent || 0) + ' জনের ফোনে পৌঁছেছে', true);
+      document.getElementById('bGroup').value = '';
+      document.getElementById('bLocation').value = '';
+      document.getElementById('bContact').value = '';
+      document.getElementById('bNote').value = '';
+      loadBloodAlertHistory();
+    } catch (e) {
+      showMsg(bloodAlertMsg, 'সার্ভারে সমস্যা হয়েছে, আবার চেষ্টা করুন', false);
+    } finally {
+      bloodAlertBtn.disabled = false;
+      bloodAlertBtn.textContent = '🩸 এখনই অ্যালার্ট পাঠান';
+    }
+  });
+
+  async function loadBloodAlertHistory() {
+    const box = document.getElementById('bloodAlertHistory');
+    try {
+      const res = await fetch('/api/blood-alert', {
+        headers: { 'x-admin-key': getAdminKey() },
+      });
+      if (!res.ok) { box.innerHTML = ''; return; }
+      const alerts = await res.json();
+      if (!Array.isArray(alerts) || alerts.length === 0) { box.innerHTML = ''; return; }
+      box.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:6px;">আগের অ্যালার্টসমূহ:</p>' +
+        alerts.slice(0, 8).map((a) => {
+          const d = new Date(a.createdAt || 0);
+          const dateStr = isNaN(d.getTime()) ? '' : d.toLocaleDateString('bn-BD') + ' ' + d.toLocaleTimeString('bn-BD', { hour: '2-digit', minute: '2-digit' });
+          return '<div class="blood-history-item" style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px;">' +
+            '<div><b>' + escapeHtml(a.bloodGroup) + '</b>' +
+            (a.location ? ' — ' + escapeHtml(a.location) : '') +
+            ' — ' + escapeHtml(a.contact) +
+            ' (' + (a.sent || 0) + ' জনকে পাঠানো হয়েছে, ' + dateStr + ')</div>' +
+            '<button class="n-del" data-alert-id="' + escapeHtml(a.id) + '" style="flex-shrink:0;">মুছুন</button>' +
+            '</div>';
+        }).join('');
+      box.querySelectorAll('.n-del').forEach((btn) => {
+        btn.addEventListener('click', () => deleteBloodAlert(btn.getAttribute('data-alert-id')));
+      });
+    } catch (e) {
+      box.innerHTML = '';
+    }
+  }
+
+  async function deleteBloodAlert(id) {
+    if (!confirm('এই অ্যালার্ট এন্ট্রিটা ইতিহাস থেকে মুছে ফেলতে চান? (আগে যাদের ফোনে পাঠানো হয়েছে সেটা ফেরানো যাবে না, শুধু এই তালিকা থেকে মুছে যাবে)')) return;
+    try {
+      const res = await fetch('/api/blood-alert?id=' + encodeURIComponent(id), {
+        method: 'DELETE',
+        headers: { 'x-admin-key': getAdminKey() },
+      });
+      if (res.status === 401) {
+        clearAdminKey();
+        alert('সেশনের মেয়াদ শেষ, আবার লগইন করুন');
+        location.reload();
+        return;
+      }
+      loadBloodAlertHistory();
+    } catch (e) {
+      alert('মুছতে সমস্যা হয়েছে');
+    }
+  }
+
+  // ===== অভিযোগ ড্যাশবোর্ড =====
+  const STATUS_LABELS = { new: 'নতুন', seen: 'দেখা হয়েছে', resolved: 'সমাধান হয়েছে' };
+
+  async function loadComplaintsList() {
+    const box = document.getElementById('complaintsList');
+    box.innerHTML = '<p class="empty-hint">লোড হচ্ছে...</p>';
+    try {
+      const res = await fetch('/api/complaints-admin', {
+        headers: { 'x-admin-key': getAdminKey() },
+      });
+      if (res.status === 401) {
+        box.innerHTML = '<p class="empty-hint">লগইন লাগবে</p>';
+        return;
+      }
+      const complaints = await res.json();
+      if (!Array.isArray(complaints) || complaints.length === 0) {
+        box.innerHTML = '<p class="empty-hint">এখনো কোনো অভিযোগ জমা পড়েনি</p>';
+        return;
+      }
+      box.innerHTML = '';
+      complaints.forEach((c) => {
+        const d = new Date(c.createdAt || 0);
+        const dateStr = isNaN(d.getTime()) ? '' : d.toLocaleDateString('bn-BD');
+        const row = document.createElement('div');
+        row.className = 'complaint-row';
+        row.innerHTML = `
+          <div class="c-top">
+            <span class="c-meta">${escapeHtml(c.name)} • ${escapeHtml(c.cls)} • ${escapeHtml(c.category)} • ${dateStr}</span>
+            <span class="status-badge status-${escapeHtml(c.status)}">${escapeHtml(STATUS_LABELS[c.status] || c.status)}</span>
+          </div>
+          <p class="c-details">${escapeHtml(c.details)}</p>
+          <div class="c-actions">
+            ${c.status !== 'seen' ? '<button class="c-seen">দেখা হয়েছে চিহ্নিত করুন</button>' : ''}
+            ${c.status !== 'resolved' ? '<button class="c-resolved">সমাধান হয়েছে চিহ্নিত করুন</button>' : ''}
+            <button class="n-del">মুছুন</button>
+          </div>
+        `;
+        const seenBtn = row.querySelector('.c-seen');
+        if (seenBtn) seenBtn.addEventListener('click', () => updateComplaintStatus(c.id, 'seen'));
+        const resolvedBtn = row.querySelector('.c-resolved');
+        if (resolvedBtn) resolvedBtn.addEventListener('click', () => updateComplaintStatus(c.id, 'resolved'));
+        row.querySelector('.n-del').addEventListener('click', () => deleteComplaint(c.id));
+        box.appendChild(row);
+      });
+    } catch (e) {
+      box.innerHTML = '<p class="empty-hint">অভিযোগ লোড করা যায়নি</p>';
+    }
+  }
+
+  async function updateComplaintStatus(id, status) {
+    try {
+      const res = await fetch('/api/complaints-admin', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'x-admin-key': getAdminKey() },
+        body: JSON.stringify({ id, status }),
+      });
+      if (res.status === 401) {
+        clearAdminKey();
+        alert('সেশনের মেয়াদ শেষ, আবার লগইন করুন');
+        location.reload();
+        return;
+      }
+      loadComplaintsList();
+    } catch (e) {
+      alert('আপডেট করতে সমস্যা হয়েছে');
+    }
+  }
+
+  async function deleteComplaint(id) {
+    if (!confirm('এই অভিযোগটি মুছে ফেলতে চান?')) return;
+    try {
+      const res = await fetch('/api/complaints-admin?id=' + encodeURIComponent(id), {
+        method: 'DELETE',
+        headers: { 'x-admin-key': getAdminKey() },
+      });
+      if (res.status === 401) {
+        clearAdminKey();
+        alert('সেশনের মেয়াদ শেষ, আবার লগইন করুন');
+        location.reload();
+        return;
+      }
+      loadComplaintsList();
+    } catch (e) {
+      alert('মুছতে সমস্যা হয়েছে');
+    }
+  }
+</script>
+
+</body>
+</html>

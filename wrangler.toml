@@ -6,3 +6,4 @@ pages_build_output_dir = "."
 [[kv_namespaces]]
 binding = "SCHOOL_KV"
 id = "524ca99d527645ecbbc34be595401736"
+fff

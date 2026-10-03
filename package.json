@@ -1,0 +1,9 @@
+{
+  "name": "chhagoldhara-high-school-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ছাগলধরা উচ্চ বিদ্যালয় ওয়েবসাইট — Cloudflare Pages Functions (নোটিশ + পুশ নোটিফিকেশন)",
+  "dependencies": {
+    "@pushforge/builder": "^1.1.0"
+  }
+}

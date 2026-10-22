@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /idcard.html
+Disallow: /api/
+
+Sitemap: https://chhagoldharaschool.edu.bd/sitemap.xml

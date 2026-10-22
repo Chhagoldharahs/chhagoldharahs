@@ -1,0 +1,32 @@
+# Cloudflare Pages কাস্টম হেডার।
+# দ্রষ্টব্য: কোনো ছবি নতুন করে আপলোড/পরিবর্তন করলে ফাইলের নামও পরিবর্তন করুন
+# (যেমন CHS.jpg এর বদলে CHS-2027.jpg), নইলে ক্যাশের কারণে পুরনো ছবিই দেখাতে পারে।
+
+# সব পেজে নিরাপত্তা হেডার
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: SAMEORIGIN
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+
+/*.jpg
+  Cache-Control: public, max-age=2592000, must-revalidate
+
+/*.webp
+  Cache-Control: public, max-age=2592000, must-revalidate
+
+/*.mp3
+  Cache-Control: public, max-age=2592000
+
+/sw.js
+  Cache-Control: no-cache
+
+# অ্যাডমিন ও আইডি কার্ড পেজ সার্চ ইঞ্জিনে আসবে না
+/admin.html
+  X-Robots-Tag: noindex, nofollow
+
+/idcard.html
+  X-Robots-Tag: noindex, nofollow
+
+/api/*
+  X-Robots-Tag: noindex
